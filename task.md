@@ -98,21 +98,21 @@ Menerapkan fundamental NestJS:
 
 ### Checklist
 
-- [ ] Buat `UsersModule`, `UsersController`, `UsersService`
-- [ ] Buat entity `User` (id, name, email, password, role [ADMIN/USER], timestamps)
-- [ ] Migrasi database untuk tabel `users`
-- [ ] Buat `AuthModule`, `AuthController`, `AuthService`
-- [ ] Implementasi **Register** endpoint (`POST /auth/register`)
-  - [ ] DTO validasi: name, email (unique), password (min length)
-  - [ ] Hash password menggunakan `bcrypt`
-- [ ] Implementasi **Login** endpoint (`POST /auth/login`)
-  - [ ] Validasi credential, return JWT token
-- [ ] Implementasi **JWT Strategy** (`@nestjs/passport` + `passport-jwt`)
-- [ ] Implementasi **JwtAuthGuard** — proteksi route yang memerlukan autentikasi
-- [ ] Implementasi **RolesGuard** + `@Roles()` decorator — role-based access control (Admin vs User)
-- [ ] Implementasi **Get Current User Profile** (`GET /users/me`)
-- [ ] Implementasi **Role Management** oleh Admin (`PATCH /users/:id/role`)
-- [ ] Unit test untuk auth flow (register, login, token validation)
+- [x] Buat `UsersModule`, `UsersController`, `UsersService`
+- [x] Buat entity `User` (id, name, email, password, role [ADMIN/USER], timestamps)
+- [x] Migrasi database untuk tabel `users`
+- [x] Buat `AuthModule`, `AuthController`, `AuthService`
+- [x] Implementasi **Register** endpoint (`POST /auth/register`)
+  - [x] DTO validasi: name, email (unique), password (min length)
+  - [x] Hash password menggunakan `bcrypt`
+- [x] Implementasi **Login** endpoint (`POST /auth/login`)
+  - [x] Validasi credential, return JWT token
+- [x] Implementasi **JWT Strategy** (`@nestjs/passport` + `passport-jwt`)
+- [x] Implementasi **JwtAuthGuard** — proteksi route yang memerlukan autentikasi
+- [x] Implementasi **RolesGuard** + `@Roles()` decorator — role-based access control (Admin vs User)
+- [x] Implementasi **Get Current User Profile** (`GET /users/me`)
+- [x] Implementasi **Role Management** oleh Admin (`PATCH /users/:id/role`)
+- [x] Unit test untuk auth flow (register, login, token validation)
 
 ### Endpoints
 

@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "NestJS Onboarding",
-    "description": "Postman collection for the NestJS Onboarding project",
+    "name": "NestJS Onboarding — Ticketing System",
+    "description": "Postman collection untuk project NestJS Onboarding — Sistem Manajemen Tiket dan Acara.\n\nBase URL: http://localhost:3000\nGlobal Prefix: /api",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -15,14 +15,236 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api"]
             },
             "description": "Endpoint dasar untuk memastikan aplikasi berjalan dengan baik."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "description": "Endpoint publik untuk registrasi dan login. Tidak memerlukan autentikasi.",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('authToken', response.data.accessToken);",
+                  "        console.log('Token saved from register response');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Registrasi user baru.\n\nValidasi:\n- name: required, max 100 karakter\n- email: required, format email valid, harus unik\n- password: required, minimal 8 karakter\n\nResponse: 201 Created + user data + JWT accessToken"
+          },
+          "response": []
+        },
+        {
+          "name": "Register Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('adminToken', response.data.accessToken);",
+                  "        pm.collectionVariables.set('adminUserId', response.data.user.id);",
+                  "        console.log('Admin token and ID saved from register response');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin12345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Registrasi user yang akan dijadikan Admin.\n\nSetelah register, gunakan endpoint 'Update User Role' untuk mengubah role ke ADMIN.\n\nNote: User baru selalu memiliki role USER. Untuk testing, update role secara manual di database terlebih dahulu, lalu login ulang."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('authToken', response.data.accessToken);",
+                  "        console.log('Token saved from login response');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login user dan mendapatkan JWT token.\n\nValidasi:\n- email: required, format email valid\n- password: required\n\nResponse: 200 OK + user data + JWT accessToken\n\nToken otomatis disimpan ke collection variable 'authToken' via test script."
+          },
+          "response": []
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.accessToken) {",
+                  "        pm.collectionVariables.set('adminToken', response.data.accessToken);",
+                  "        console.log('Admin token saved from login response');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin12345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login sebagai Admin.\n\nToken otomatis disimpan ke collection variable 'adminToken' via test script."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "Endpoint untuk manajemen profil user dan role. Memerlukan autentikasi JWT.",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            },
+            "description": "Mendapatkan profil user yang sedang login.\n\nAuth: Required (semua role)\nHeader: Authorization: Bearer <token>\n\nResponse: 200 OK + user data (tanpa password)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Role (Admin Only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/:id/role",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", ":id", "role"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{targetUserId}}",
+                  "description": "UUID of the user whose role will be updated"
+                }
+              ]
+            },
+            "description": "Update role user (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nBody:\n- role: 'ADMIN' atau 'USER'\n\nResponse: 200 OK + updated user data"
           },
           "response": []
         }
@@ -35,6 +257,30 @@
       "value": "http://localhost:3000",
       "type": "string",
       "description": "Base URL of the application"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string",
+      "description": "JWT token for authenticated user (auto-set after login/register)"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string",
+      "description": "JWT token for admin user (auto-set after admin login)"
+    },
+    {
+      "key": "targetUserId",
+      "value": "",
+      "type": "string",
+      "description": "UUID of target user for role update"
+    },
+    {
+      "key": "adminUserId",
+      "value": "",
+      "type": "string",
+      "description": "UUID of admin user (auto-set after admin register)"
     }
   ]
 }

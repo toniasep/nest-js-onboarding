@@ -5,6 +5,8 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { UsersModule } from './users/users.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
@@ -45,6 +47,10 @@ import { AppService } from './app.service.js';
         ],
       }),
     }),
+
+    // ─── Feature Modules ──────────────────────────────────────
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
