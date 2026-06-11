@@ -7,6 +7,10 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { EventCategoriesModule } from './event-categories/event-categories.module.js';
+import { EventsModule } from './events/events.module.js';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-ioredis-yet';
 
 @Module({
   imports: [
@@ -51,6 +55,21 @@ import { AuthModule } from './auth/auth.module.js';
     // ─── Feature Modules ──────────────────────────────────────
     UsersModule,
     AuthModule,
+    EventCategoriesModule,
+    EventsModule,
+
+    // ─── Cache Module (Redis) ─────────────────────────────────
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        store: await redisStore({
+          host: configService.get<string>('REDIS_HOST', 'localhost'),
+          port: configService.get<number>('REDIS_PORT', 6379),
+        }),
+      }),
+    }),
   ],
   controllers: [AppController],
   providers: [

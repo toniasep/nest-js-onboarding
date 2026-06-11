@@ -142,32 +142,32 @@ Menerapkan fundamental NestJS:
 
 #### Event Category
 
-- [ ] Buat `EventCategoriesModule`, `EventCategoriesController`, `EventCategoriesService`
-- [ ] Buat entity `EventCategory` (id, name, description, timestamps)
-- [ ] Migrasi database untuk tabel `event_categories`
-- [ ] Implementasi **CRUD Event Category**
-  - [ ] `POST /event-categories` — Create (Admin only)
-  - [ ] `GET /event-categories` — List + Search + Pagination (Public)
-  - [ ] `GET /event-categories/:id` — Detail (Public)
-  - [ ] `PUT /event-categories/:id` — Update (Admin only)
-  - [ ] `DELETE /event-categories/:id` — Delete (Admin only)
-- [ ] DTO validasi untuk create & update
+- [x] Buat `EventCategoriesModule`, `EventCategoriesController`, `EventCategoriesService`
+- [x] Buat entity `EventCategory` (id, name, description, timestamps)
+- [x] Migrasi database untuk tabel `event_categories`
+- [x] Implementasi **CRUD Event Category**
+  - [x] `POST /event-categories` — Create (Admin only)
+  - [x] `GET /event-categories` — List + Search + Pagination (Public)
+  - [x] `GET /event-categories/:id` — Detail (Public)
+  - [x] `PUT /event-categories/:id` — Update (Admin only)
+  - [x] `DELETE /event-categories/:id` — Delete (Admin only)
+- [x] DTO validasi untuk create & update
 
 #### Events
 
-- [ ] Buat `EventsModule`, `EventsController`, `EventsService`
-- [ ] Buat entity `Event` (id, title, description, location, eventDate, price, quota, isPublished, categoryId, timestamps)
-- [ ] Setup relasi `@ManyToOne` Event → EventCategory dan `@OneToMany` EventCategory → Event
-- [ ] Migrasi database untuk tabel `events`
-- [ ] Implementasi **CRUD Events**
-  - [ ] `POST /events` — Create event (Admin only)
-  - [ ] `GET /events` — List + Search + Pagination + Sorting (Public, hanya `isPublished = true`)
-  - [ ] `GET /events/:id` — Detail event (Public)
-  - [ ] `PUT /events/:id` — Update event (Admin only)
-  - [ ] `DELETE /events/:id` — Delete event (Admin only)
-- [ ] Implementasi **Publish / Unpublish** (`PATCH /events/:id/publish`)
-- [ ] DTO validasi untuk create & update
-- [ ] Implementasi **Redis Caching** untuk list events (hot data)
+- [x] Buat `EventsModule`, `EventsController`, `EventsService`
+- [x] Buat entity `Event` (id, title, description, location, eventDate, price, quota, isPublished, categoryId, timestamps)
+- [x] Setup relasi `@ManyToOne` Event → EventCategory dan `@OneToMany` EventCategory → Event
+- [x] Migrasi database untuk tabel `events`
+- [x] Implementasi **CRUD Events**
+  - [x] `POST /events` — Create event (Admin only)
+  - [x] `GET /events` — List + Search + Pagination + Sorting (Public, hanya `isPublished = true`)
+  - [x] `GET /events/:id` — Detail event (Public)
+  - [x] `PUT /events/:id` — Update event (Admin only)
+  - [x] `DELETE /events/:id` — Delete event (Admin only)
+- [x] Implementasi **Publish / Unpublish** (`PATCH /events/:id/publish`)
+- [x] DTO validasi untuk create & update
+- [x] Implementasi **Redis Caching** untuk list events (hot data)
 
 ### Endpoints
 

@@ -15,8 +15,12 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api",
-              "host": ["{{baseUrl}}"],
-              "path": ["api"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api"
+              ]
             },
             "description": "Endpoint dasar untuk memastikan aplikasi berjalan dengan baik."
           },
@@ -61,8 +65,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
             },
             "description": "Registrasi user baru.\n\nValidasi:\n- name: required, max 100 karakter\n- email: required, format email valid, harus unik\n- password: required, minimal 8 karakter\n\nResponse: 201 Created + user data + JWT accessToken"
           },
@@ -102,8 +112,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
             },
             "description": "Registrasi user yang akan dijadikan Admin.\n\nSetelah register, gunakan endpoint 'Update User Role' untuk mengubah role ke ADMIN.\n\nNote: User baru selalu memiliki role USER. Untuk testing, update role secara manual di database terlebih dahulu, lalu login ulang."
           },
@@ -142,8 +158,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
             },
             "description": "Login user dan mendapatkan JWT token.\n\nValidasi:\n- email: required, format email valid\n- password: required\n\nResponse: 200 OK + user data + JWT accessToken\n\nToken otomatis disimpan ke collection variable 'authToken' via test script."
           },
@@ -182,8 +204,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
             },
             "description": "Login sebagai Admin.\n\nToken otomatis disimpan ke collection variable 'adminToken' via test script."
           },
@@ -207,8 +235,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
             },
             "description": "Mendapatkan profil user yang sedang login.\n\nAuth: Required (semua role)\nHeader: Authorization: Bearer <token>\n\nResponse: 200 OK + user data (tanpa password)"
           },
@@ -234,8 +268,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/users/:id/role",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", ":id", "role"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                ":id",
+                "role"
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -245,6 +286,457 @@
               ]
             },
             "description": "Update role user (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nBody:\n- role: 'ADMIN' atau 'USER'\n\nResponse: 200 OK + updated user data"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Event Categories",
+      "description": "CRUD endpoint untuk kategori event. Create/Update/Delete memerlukan autentikasi Admin.",
+      "item": [
+        {
+          "name": "Create Category (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.id) {",
+                  "        pm.collectionVariables.set('categoryId', response.data.id);",
+                  "        console.log('Category ID saved: ' + response.data.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Konser\",\n  \"description\": \"Event kategori konser musik\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/event-categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "event-categories"
+              ]
+            },
+            "description": "Membuat kategori event baru (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nBody:\n- name: required, string, max 100 karakter\n- description: optional, string\n\nResponse: 201 Created + category data\n\nTest script otomatis menyimpan categoryId ke collection variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Categories (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/event-categories?page=1&limit=10&sortBy=createdAt&sortOrder=DESC",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "event-categories"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Nomor halaman (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Jumlah item per halaman (default: 10, max: 100)"
+                },
+                {
+                  "key": "search",
+                  "value": "Konser",
+                  "description": "Pencarian berdasarkan nama kategori",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "description": "Field untuk sorting (default: createdAt)"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "DESC",
+                  "description": "Arah sorting: ASC atau DESC (default: DESC)"
+                }
+              ]
+            },
+            "description": "Mendapatkan daftar semua kategori event dengan pagination dan pencarian.\n\nAuth: Tidak diperlukan (Public)\n\nQuery Parameters:\n- page: nomor halaman (default: 1)\n- limit: jumlah per halaman (default: 10, max: 100)\n- search: pencarian berdasarkan nama\n- sortBy: field sorting (default: createdAt)\n- sortOrder: ASC atau DESC (default: DESC)\n\nResponse: 200 OK + { data: [...], meta: { page, limit, total, totalPages } }"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category Detail (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/event-categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "event-categories",
+                "{{categoryId}}"
+              ]
+            },
+            "description": "Mendapatkan detail kategori event berdasarkan ID.\n\nAuth: Tidak diperlukan (Public)\n\nPath Parameter:\n- id: UUID kategori event\n\nResponse: 200 OK + category data\nError: 404 Not Found jika kategori tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Konser Musik\",\n  \"description\": \"Event kategori konser musik dan pertunjukan\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/event-categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "event-categories",
+                "{{categoryId}}"
+              ]
+            },
+            "description": "Mengupdate kategori event (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nBody (semua field opsional — partial update):\n- name: string, max 100 karakter\n- description: string\n\nResponse: 200 OK + updated category data\nError: 404 Not Found jika kategori tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/event-categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "event-categories",
+                "{{categoryId}}"
+              ]
+            },
+            "description": "Menghapus kategori event (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nPath Parameter:\n- id: UUID kategori event\n\nResponse: 200 OK\nError: 404 Not Found jika kategori tidak ditemukan"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "description": "CRUD endpoint untuk event. Create/Update/Delete/Publish memerlukan autentikasi Admin. List public hanya menampilkan event yang sudah dipublish.",
+      "item": [
+        {
+          "name": "Create Event (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.id) {",
+                  "        pm.collectionVariables.set('eventId', response.data.id);",
+                  "        console.log('Event ID saved: ' + response.data.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Jazz Night Festival\",\n  \"description\": \"Festival musik jazz terbesar di Indonesia dengan artis internasional\",\n  \"location\": \"Jakarta Convention Center\",\n  \"eventDate\": \"2026-08-15T19:00:00.000Z\",\n  \"price\": 250000,\n  \"quota\": 500,\n  \"categoryId\": \"{{categoryId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ]
+            },
+            "description": "Membuat event baru (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nBody:\n- title: required, string\n- description: required, string\n- location: required, string\n- eventDate: required, ISO 8601 date string\n- price: required, number (min: 0)\n- quota: required, number (min: 1)\n- categoryId: required, UUID kategori event yang valid\n- isPublished: optional, boolean (default: false)\n\nResponse: 201 Created + event data\nError: 404 Not Found jika categoryId tidak valid\n\nTest script otomatis menyimpan eventId ke collection variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Events - Public (Published Only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events?page=1&limit=10&sortBy=createdAt&sortOrder=DESC",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Nomor halaman (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Jumlah item per halaman (default: 10, max: 100)"
+                },
+                {
+                  "key": "search",
+                  "value": "Jazz",
+                  "description": "Pencarian berdasarkan judul event",
+                  "disabled": true
+                },
+                {
+                  "key": "categoryId",
+                  "value": "{{categoryId}}",
+                  "description": "Filter berdasarkan kategori",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "description": "Field untuk sorting (default: createdAt)"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "DESC",
+                  "description": "Arah sorting: ASC atau DESC (default: DESC)"
+                }
+              ]
+            },
+            "description": "Mendapatkan daftar event yang sudah dipublish (isPublished = true) dengan pagination, pencarian, dan sorting.\n\nAuth: Tidak diperlukan (Public)\nCaching: Redis cache aktif pada endpoint ini.\n\nQuery Parameters:\n- page: nomor halaman (default: 1)\n- limit: jumlah per halaman (default: 10, max: 100)\n- search: pencarian berdasarkan judul\n- categoryId: filter berdasarkan UUID kategori\n- sortBy: field sorting (default: createdAt)\n- sortOrder: ASC atau DESC (default: DESC)\n\nResponse: 200 OK + { data: [...], meta: { page, limit, total, totalPages } }"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Events - Admin (Including Drafts)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/all?page=1&limit=10&sortBy=createdAt&sortOrder=DESC",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "all"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Nomor halaman (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Jumlah item per halaman (default: 10, max: 100)"
+                },
+                {
+                  "key": "search",
+                  "value": "Jazz",
+                  "description": "Pencarian berdasarkan judul event",
+                  "disabled": true
+                },
+                {
+                  "key": "categoryId",
+                  "value": "{{categoryId}}",
+                  "description": "Filter berdasarkan kategori",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt",
+                  "description": "Field untuk sorting (default: createdAt)"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "DESC",
+                  "description": "Arah sorting: ASC atau DESC (default: DESC)"
+                }
+              ]
+            },
+            "description": "Mendapatkan daftar SEMUA event termasuk yang belum dipublish / draft (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nQuery Parameters: sama dengan GET /events (public)\n\nResponse: 200 OK + { data: [...], meta: { page, limit, total, totalPages } }"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Event Detail (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventId}}"
+              ]
+            },
+            "description": "Mendapatkan detail event berdasarkan ID, termasuk data kategori.\n\nAuth: Tidak diperlukan (Public)\n\nPath Parameter:\n- id: UUID event\n\nResponse: 200 OK + event data (dengan relasi category)\nError: 404 Not Found jika event tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Event (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Jazz Night Festival 2026\",\n  \"description\": \"Festival musik jazz terbesar di Indonesia — edisi spesial 2026\",\n  \"price\": 300000,\n  \"quota\": 750\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventId}}"
+              ]
+            },
+            "description": "Mengupdate event (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nBody (semua field opsional — partial update):\n- title, description, location, eventDate, price, quota, categoryId, isPublished\n\nJika categoryId diubah, akan divalidasi apakah kategori baru valid.\n\nResponse: 200 OK + updated event data\nError: 404 Not Found jika event atau kategori baru tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Publish Event (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}/publish",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventId}}",
+                "publish"
+              ]
+            },
+            "description": "Toggle status publish event (Admin only).\n\nJika event saat ini unpublished (isPublished: false), akan menjadi published (true), dan sebaliknya.\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nPath Parameter:\n- id: UUID event\n\nResponse: 200 OK + updated event data\nError: 404 Not Found jika event tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Event (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "events",
+                "{{eventId}}"
+              ]
+            },
+            "description": "Menghapus event (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nPath Parameter:\n- id: UUID event\n\nResponse: 200 OK\nError: 404 Not Found jika event tidak ditemukan"
           },
           "response": []
         }
@@ -281,6 +773,18 @@
       "value": "",
       "type": "string",
       "description": "UUID of admin user (auto-set after admin register)"
+    },
+    {
+      "key": "categoryId",
+      "value": "",
+      "type": "string",
+      "description": "UUID of event category (auto-set after create category)"
+    },
+    {
+      "key": "eventId",
+      "value": "",
+      "type": "string",
+      "description": "UUID of event (auto-set after create event)"
     }
   ]
 }
