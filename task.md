@@ -202,25 +202,25 @@ Menerapkan fundamental NestJS:
 
 ### Checklist
 
-- [ ] Buat `OrdersModule`, `OrdersController`, `OrdersService`
-- [ ] Buat entity `Order` (id, userId, eventId, quantity, totalAmount, status [PENDING/PAID/EXPIRED], paymentUrl, xenditInvoiceId, timestamps)
-- [ ] Setup relasi `@ManyToOne` Order → User, Order → Event
-- [ ] Migrasi database untuk tabel `orders`
-- [ ] Implementasi **Create Order** (`POST /orders`)
-  - [ ] Validasi: event harus published, quota tersedia
-  - [ ] Gunakan **TypeORM Transaction** — create order + kurangi quota event secara atomik
-  - [ ] Integrasi **Xendit** — buat invoice pembayaran, simpan `paymentUrl`
-- [ ] Implementasi **Xendit Webhook** (`POST /payments/webhook`)
-  - [ ] Verifikasi callback signature
-  - [ ] Update status order ke `PAID` saat pembayaran berhasil
-  - [ ] Trigger proses pembuatan tiket (via BullMQ queue)
-- [ ] Implementasi **Get My Orders** (`GET /orders`) — list order milik user login
-- [ ] Implementasi **Get Order Detail** (`GET /orders/:id`)
-- [ ] Implementasi **Admin: List All Orders** (`GET /admin/orders`) — semua order + filter + pagination
-- [ ] Implementasi **BullMQ Job: Auto-Expire Order**
-  - [ ] Queue delayed job saat order dibuat (misal 15 menit)
-  - [ ] Worker: cek status, jika masih PENDING → ubah ke EXPIRED + kembalikan quota
-- [ ] DTO validasi untuk create order
+- [x] Buat `OrdersModule`, `OrdersController`, `OrdersService`
+- [x] Buat entity `Order` (id, userId, eventId, quantity, totalAmount, status [PENDING/PAID/EXPIRED], paymentUrl, xenditInvoiceId, timestamps)
+- [x] Setup relasi `@ManyToOne` Order → User, Order → Event
+- [x] Migrasi database untuk tabel `orders`
+- [x] Implementasi **Create Order** (`POST /orders`)
+  - [x] Validasi: event harus published, quota tersedia
+  - [x] Gunakan **TypeORM Transaction** — create order + kurangi quota event secara atomik
+  - [x] Integrasi **Xendit** — buat invoice pembayaran, simpan `paymentUrl`
+- [x] Implementasi **Xendit Webhook** (`POST /payments/webhook`)
+  - [x] Verifikasi callback signature
+  - [x] Update status order ke `PAID` saat pembayaran berhasil
+  - [x] Trigger proses pembuatan tiket (via BullMQ queue)
+- [x] Implementasi **Get My Orders** (`GET /orders`) — list order milik user login
+- [x] Implementasi **Get Order Detail** (`GET /orders/:id`)
+- [x] Implementasi **Admin: List All Orders** (`GET /admin/orders`) — semua order + filter + pagination
+- [x] Implementasi **BullMQ Job: Auto-Expire Order**
+  - [x] Queue delayed job saat order dibuat (misal 15 menit)
+  - [x] Worker: cek status, jika masih PENDING → ubah ke EXPIRED + kembalikan quota
+- [x] DTO validasi untuk create order
 
 ### Endpoints
 

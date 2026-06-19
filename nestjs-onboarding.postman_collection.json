@@ -741,6 +741,168 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Orders",
+      "description": "CRUD endpoint untuk order dan webhook pembayaran. Memerlukan autentikasi.",
+      "item": [
+        {
+          "name": "Create Order (User)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.id) {",
+                  "        pm.collectionVariables.set('orderId', response.data.id);",
+                  "        console.log('Order ID saved: ' + response.data.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"{{eventId}}\",\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "description": "Membuat order baru (User only).\n\nAuth: Required (USER/ALL)\nHeader: Authorization: Bearer <authToken>\n\nBody:\n- eventId: required, UUID event yang dipublish\n- quantity: required, min 1\n\nResponse: 201 Created + order data + Xendit paymentUrl\nError: 400 Bad Request jika event tidak published atau kuota tidak cukup\n\nTest script otomatis menyimpan orderId ke collection variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Orders (User)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "description": "Mendapatkan daftar riwayat order milik user yang login.\n\nAuth: Required (USER/ALL)\nHeader: Authorization: Bearer <authToken>\n\nResponse: 200 OK + list order beserta relasi event"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order Detail (Public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "description": "Mendapatkan detail order berdasarkan ID.\n\nAuth: Required (ALL)\nHeader: Authorization: Bearer <authToken>\n\nPath Parameter:\n- id: UUID order\n\nResponse: 200 OK + order data\nError: 404 Not Found jika order tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders"
+              ]
+            },
+            "description": "Mendapatkan daftar semua order dari semua user (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nResponse: 200 OK + list of all orders"
+          },
+          "response": []
+        },
+        {
+          "name": "Xendit Webhook Callback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-callback-token",
+                "value": "{{xenditWebhookToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"external_id\": \"{{orderId}}\",\n  \"status\": \"PAID\",\n  \"amount\": 500000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/webhook",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "webhook"
+              ]
+            },
+            "description": "Simulasi webhook dari Xendit ketika pembayaran berhasil.\n\nAuth: Menerima x-callback-token dari Xendit\nHeader: x-callback-token\n\nBody:\n- external_id: UUID dari order\n- status: 'PAID' atau 'EXPIRED'\n\nResponse: 200 OK + { success: true }"
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [

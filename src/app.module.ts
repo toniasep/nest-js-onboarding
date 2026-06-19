@@ -11,6 +11,8 @@ import { EventCategoriesModule } from './event-categories/event-categories.modul
 import { EventsModule } from './events/events.module.js';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
+import { BullModule } from '@nestjs/bullmq';
+import { OrdersModule } from './orders/orders.module.js';
 
 @Module({
   imports: [
@@ -57,6 +59,19 @@ import { redisStore } from 'cache-manager-ioredis-yet';
     AuthModule,
     EventCategoriesModule,
     EventsModule,
+    OrdersModule,
+
+    // ─── BullMQ Module (Redis) ────────────────────────────────
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        connection: {
+          host: configService.get<string>('REDIS_HOST', 'localhost'),
+          port: configService.get<number>('REDIS_PORT', 6379),
+        },
+      }),
+    }),
 
     // ─── Cache Module (Redis) ─────────────────────────────────
     CacheModule.registerAsync({
