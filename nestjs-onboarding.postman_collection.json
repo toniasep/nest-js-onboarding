@@ -903,6 +903,120 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Tickets",
+      "description": "Endpoint untuk manajemen tiket. Tiket di-generate secara otomatis setelah pembayaran sukses.",
+      "item": [
+        {
+          "name": "Get My Tickets (User)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets"
+              ]
+            },
+            "description": "Mendapatkan daftar tiket milik user yang login.\n\nAuth: Required (USER/ALL)\nHeader: Authorization: Bearer <authToken>\n\nResponse: 200 OK + list tiket beserta relasi event"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ticket Detail (Public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/{{ticketId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketId}}"
+              ]
+            },
+            "description": "Mendapatkan detail tiket berdasarkan ID. Akan divalidasi apakah user peminta adalah pemilik tiket tersebut.\n\nAuth: Required (ALL)\nHeader: Authorization: Bearer <authToken>\n\nPath Parameter:\n- id: UUID tiket\n\nResponse: 200 OK + ticket data\nError: 404 Not Found jika tiket tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "Download Ticket PDF (User)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/{{ticketId}}/download",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "{{ticketId}}",
+                "download"
+              ]
+            },
+            "description": "Mendownload file PDF tiket. Responsenya berupa binary stream file PDF.\n\nAuth: Required (USER)\nHeader: Authorization: Bearer <authToken>\n\nPath Parameter:\n- id: UUID tiket\n\nResponse: 200 OK + PDF stream (Content-Type: application/pdf)"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Ticket (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ticketCode\": \"{{ticketCode}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "tickets",
+                "verify"
+              ]
+            },
+            "description": "Memverifikasi tiket dengan ticketCode (dari QR Code) dan mengubah statusnya menjadi USED (Admin only).\n\nAuth: Required (ADMIN)\nHeader: Authorization: Bearer <adminToken>\n\nBody:\n- ticketCode: UUID dari tiket\n\nResponse: 200 OK + updated ticket data (status USED)"
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [
@@ -947,6 +1061,18 @@
       "value": "",
       "type": "string",
       "description": "UUID of event (auto-set after create event)"
+    },
+    {
+      "key": "ticketId",
+      "value": "",
+      "type": "string",
+      "description": "UUID of ticket"
+    },
+    {
+      "key": "ticketCode",
+      "value": "",
+      "type": "string",
+      "description": "UUID ticketCode from QR Code"
     }
   ]
 }

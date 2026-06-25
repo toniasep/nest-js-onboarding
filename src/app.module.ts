@@ -13,6 +13,8 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { BullModule } from '@nestjs/bullmq';
 import { OrdersModule } from './orders/orders.module.js';
+import { TicketsModule } from './tickets/tickets.module.js';
+import { MinioModule } from './minio/minio.module.js';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { OrdersModule } from './orders/orders.module.js';
     EventCategoriesModule,
     EventsModule,
     OrdersModule,
+    TicketsModule,
+    MinioModule,
 
     // ─── BullMQ Module (Redis) ────────────────────────────────
     BullModule.forRootAsync({

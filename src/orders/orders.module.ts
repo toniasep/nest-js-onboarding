@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
 import { OrdersController } from './orders.controller.js';
@@ -8,6 +8,7 @@ import { OrdersService } from './orders.service.js';
 import { Order } from './entities/order.entity.js';
 import { Event } from '../events/entities/event.entity.js';
 import { OrderProcessor } from './processors/order.processor.js';
+import { TicketsModule } from '../tickets/tickets.module.js';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { OrderProcessor } from './processors/order.processor.js';
     BullModule.registerQueue({
       name: 'orders',
     }),
+    forwardRef(() => TicketsModule),
   ],
   controllers: [OrdersController, AdminOrdersController, PaymentsController],
   providers: [OrdersService, OrderProcessor],

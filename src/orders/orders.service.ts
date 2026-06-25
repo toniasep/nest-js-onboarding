@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -10,6 +10,7 @@ import { Order, OrderStatus } from './entities/order.entity.js';
 import { Event } from '../events/entities/event.entity.js';
 import { CreateOrderDto } from './dto/create-order.dto.js';
 import { User } from '../users/entities/user.entity.js';
+import { TicketsService } from '../tickets/tickets.service.js';
 
 @Injectable()
 export class OrdersService {
@@ -22,6 +23,8 @@ export class OrdersService {
     private readonly dataSource: DataSource,
     @InjectQueue('orders') private ordersQueue: Queue,
     private configService: ConfigService,
+    @Inject(forwardRef(() => TicketsService))
+    private readonly ticketsService: TicketsService,
   ) {
     this.xendit = new Xendit({
       secretKey: this.configService.get<string>('XENDIT_SECRET_KEY') || '',
@@ -123,7 +126,8 @@ export class OrdersService {
     if (status === 'PAID' || status === 'SETTLED') {
       order.status = OrderStatus.PAID;
       await this.ordersRepository.save(order);
-      // Phase 5: Trigger ticket generation here
+      // Trigger ticket generation via BullMQ
+      await this.ticketsService.generateTicketsForOrder(order.id);
     } else if (status === 'EXPIRED') {
       await this.expireOrder(order.id);
     }
