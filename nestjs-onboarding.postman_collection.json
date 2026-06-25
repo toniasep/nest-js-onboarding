@@ -901,6 +901,39 @@
             "description": "Simulasi webhook dari Xendit ketika pembayaran berhasil.\n\nAuth: Menerima x-callback-token dari Xendit\nHeader: x-callback-token\n\nBody:\n- external_id: UUID dari order\n- status: 'PAID' atau 'EXPIRED'\n\nResponse: 200 OK + { success: true }"
           },
           "response": []
+        },
+        {
+          "name": "Xendit Webhook Callback (EXPIRED)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-callback-token",
+                "value": "{{xenditWebhookToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"external_id\": \"{{orderId}}\",\n  \"status\": \"EXPIRED\",\n  \"amount\": 500000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/webhook",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "webhook"
+              ]
+            },
+            "description": "Simulasi webhook dari Xendit ketika order telah kedaluwarsa.\n\nAuth: Menerima x-callback-token dari Xendit\nHeader: x-callback-token\n\nBody:\n- external_id: UUID dari order\n- status: 'EXPIRED'\n\nResponse: 200 OK + { success: true }\nIni akan memicu pengiriman email notifikasi kedaluwarsa ke user."
+          },
+          "response": []
         }
       ]
     },

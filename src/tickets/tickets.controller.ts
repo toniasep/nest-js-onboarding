@@ -15,6 +15,7 @@ import { VerifyTicketDto } from './dto/verify-ticket.dto.js';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../common/guards/roles.guard.js';
 import { Roles } from '../common/decorators/roles.decorator.js';
+import { Public } from '../common/decorators/public.decorator.js';
 import { SkipResponseTransform } from '../common/decorators/skip-response-transform.decorator.js';
 import { Role } from '../users/entities/user.entity.js';
 
@@ -55,15 +56,17 @@ export class TicketsController {
    * Skip response transform karena response bukan JSON.
    */
   @Get(':id/download')
+  @Public()
   @SkipResponseTransform()
   async download(
     @Param('id', ParseUUIDPipe) id: string,
     @Request() req: any,
     @Res() res: Response,
   ) {
+    const userId = req.user?.id; // Bisa undefined karena Public()
     const { stream, ticketCode } = await this.ticketsService.downloadTicketPdf(
       id,
-      req.user.id,
+      userId,
     );
 
     res.set({

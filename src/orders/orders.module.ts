@@ -9,6 +9,7 @@ import { Order } from './entities/order.entity.js';
 import { Event } from '../events/entities/event.entity.js';
 import { OrderProcessor } from './processors/order.processor.js';
 import { TicketsModule } from '../tickets/tickets.module.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TicketsModule } from '../tickets/tickets.module.js';
       name: 'orders',
     }),
     forwardRef(() => TicketsModule),
+    forwardRef(() => NotificationsModule),
   ],
   controllers: [OrdersController, AdminOrdersController, PaymentsController],
   providers: [OrdersService, OrderProcessor],

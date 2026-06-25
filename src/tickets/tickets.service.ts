@@ -18,6 +18,8 @@ import { Ticket, TicketStatus } from './entities/ticket.entity.js';
 import { Order, OrderStatus } from '../orders/entities/order.entity.js';
 import { MinioService } from '../minio/minio.service.js';
 import { TICKETS_BUCKET } from '../minio/minio.constants.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
+import { forwardRef, Inject } from '@nestjs/common';
 
 /**
  * TicketsService
@@ -42,7 +44,9 @@ export class TicketsService {
     private readonly ordersRepository: Repository<Order>,
     @InjectQueue('tickets') private readonly ticketsQueue: Queue,
     private readonly minioService: MinioService,
-  ) {}
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
+  ) { }
 
   /**
    * Enqueue BullMQ job untuk generate tiket.
@@ -85,12 +89,25 @@ export class TicketsService {
       return;
     }
 
+    const createdTickets: Ticket[] = [];
     for (let i = 0; i < order.quantity; i++) {
-      await this.createSingleTicket(order, i + 1);
+      createdTickets.push(await this.createSingleTicket(order, i + 1));
     }
 
     this.logger.log(
       `Generated ${order.quantity} ticket(s) for order ${orderId}`,
+    );
+
+    // Enqueue notification email
+    const ticketUrls = createdTickets.map(
+      (t) => `http://localhost:3000/api/tickets/${t.id}/download`
+    );
+    await this.notificationsService.enqueueTicketEmail(
+      orderId,
+      order.user.email,
+      order.user.name,
+      order.event.title,
+      ticketUrls,
     );
   }
 
@@ -211,8 +228,8 @@ export class TicketsService {
         minute: '2-digit',
       });
 
-      doc.text(`📅  ${formattedDate}`);
-      doc.text(`📍  ${order.event.location}`);
+      doc.text(`${formattedDate}`);
+      doc.text(`${order.event.location}`);
       doc.moveDown(1);
 
       // ─── Attendee Info ────────────────────────────────────
@@ -288,7 +305,7 @@ export class TicketsService {
    */
   async downloadTicketPdf(
     id: string,
-    userId: string,
+    userId?: string,
   ): Promise<{ stream: Readable; ticketCode: string }> {
     const ticket = await this.findOne(id, userId);
 

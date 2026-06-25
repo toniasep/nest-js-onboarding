@@ -249,21 +249,21 @@ Menerapkan fundamental NestJS:
 
 ### Checklist
 
-- [ ] Buat `TicketsModule`, `TicketsController`, `TicketsService`
-- [ ] Buat entity `Ticket` (id, orderId, userId, eventId, ticketCode [UUID], qrCodeUrl, pdfUrl, status [ACTIVE/USED/CANCELLED], timestamps)
-- [ ] Setup relasi `@ManyToOne` Ticket → Order, Ticket → User, Ticket → Event
-- [ ] Migrasi database untuk tabel `tickets`
-- [ ] Implementasi **BullMQ Job: Generate Ticket** (trigger setelah payment PAID)
-  - [ ] Generate `ticketCode` unik (UUID)
-  - [ ] Generate **QR Code** dari ticketCode (gunakan library `qrcode`)
-  - [ ] Generate **PDF Tiket** (gunakan library `pdfkit` atau `puppeteer`)
-  - [ ] Upload QR Code & PDF ke **Minio** (Object Storage)
-  - [ ] Simpan URL QR & PDF ke entity Ticket
-- [ ] Setup **Minio Module** — koneksi dan helper upload/download
-- [ ] Implementasi **Get My Tickets** (`GET /tickets`) — list tiket milik user
-- [ ] Implementasi **Get Ticket Detail** (`GET /tickets/:id`)
-- [ ] Implementasi **Download Tiket PDF** (`GET /tickets/:id/download`)
-- [ ] Implementasi **Admin: Verify Ticket** (`POST /tickets/verify`) — scan QR Code, validasi tiket
+- [x] Buat `TicketsModule`, `TicketsController`, `TicketsService`
+- [x] Buat entity `Ticket` (id, orderId, userId, eventId, ticketCode [UUID], qrCodeUrl, pdfUrl, status [ACTIVE/USED/CANCELLED], timestamps)
+- [x] Setup relasi `@ManyToOne` Ticket → Order, Ticket → User, Ticket → Event
+- [x] Migrasi database untuk tabel `tickets`
+- [x] Implementasi **BullMQ Job: Generate Ticket** (trigger setelah payment PAID)
+  - [x] Generate `ticketCode` unik (UUID)
+  - [x] Generate **QR Code** dari ticketCode (gunakan library `qrcode`)
+  - [x] Generate **PDF Tiket** (gunakan library `pdfkit` atau `puppeteer`)
+  - [x] Upload QR Code & PDF ke **Minio** (Object Storage)
+  - [x] Simpan URL QR & PDF ke entity Ticket
+- [x] Setup **Minio Module** — koneksi dan helper upload/download
+- [x] Implementasi **Get My Tickets** (`GET /tickets`) — list tiket milik user
+- [x] Implementasi **Get Ticket Detail** (`GET /tickets/:id`)
+- [x] Implementasi **Download Tiket PDF** (`GET /tickets/:id/download`)
+- [x] Implementasi **Admin: Verify Ticket** (`POST /tickets/verify`) — scan QR Code, validasi tiket
 
 ### Endpoints
 
@@ -291,20 +291,20 @@ Menerapkan fundamental NestJS:
 
 ### Checklist
 
-- [ ] Buat `NotificationsModule`, `NotificationsService`
-- [ ] Setup **SMTP Email Provider** (gunakan `nodemailer` atau `@nestjs-modules/mailer`)
-- [ ] Buat email templates (HTML):
-  - [ ] Template: Payment Successful + Download Link Tiket
-  - [ ] Template: Event Reminder (H-1)
-  - [ ] Template: Order Expired
-- [ ] Implementasi **BullMQ Job: Send Ticket Email**
-  - [ ] Trigger setelah tiket berhasil di-generate (Phase 5)
-  - [ ] Kirim email berisi link download tiket (Minio URL)
-- [ ] Implementasi **BullMQ Job: Event Reminder**
-  - [ ] Scheduler/Cron: cek event yang H-1, kirim email reminder ke semua pemegang tiket
-- [ ] Implementasi **BullMQ Job: Payment Notification**
-  - [ ] Notifikasi saat status order berubah (PAID / EXPIRED)
-- [ ] Logging untuk setiap email yang dikirim (success/failure)
+- [x] Buat `NotificationsModule`, `NotificationsService`
+- [x] Setup **SMTP Email Provider** (gunakan `nodemailer` atau `@nestjs-modules/mailer`)
+- [x] Buat email templates (HTML):
+  - [x] Template: Payment Successful + Download Link Tiket
+  - [x] Template: Event Reminder (H-1)
+  - [x] Template: Order Expired
+- [x] Implementasi **BullMQ Job: Send Ticket Email**
+  - [x] Trigger setelah tiket berhasil di-generate (Phase 5)
+  - [x] Kirim email berisi link download tiket (Minio URL)
+- [x] Implementasi **BullMQ Job: Event Reminder**
+  - [x] Scheduler/Cron: cek event yang H-1, kirim email reminder ke semua pemegang tiket
+- [x] Implementasi **BullMQ Job: Payment Notification**
+  - [x] Notifikasi saat status order berubah (PAID / EXPIRED)
+- [x] Logging untuk setiap email yang dikirim (success/failure)
 
 ### Standar yang Diterapkan
 

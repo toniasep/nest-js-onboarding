@@ -11,6 +11,7 @@ import { Event } from '../events/entities/event.entity.js';
 import { CreateOrderDto } from './dto/create-order.dto.js';
 import { User } from '../users/entities/user.entity.js';
 import { TicketsService } from '../tickets/tickets.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 
 @Injectable()
 export class OrdersService {
@@ -25,6 +26,8 @@ export class OrdersService {
     private configService: ConfigService,
     @Inject(forwardRef(() => TicketsService))
     private readonly ticketsService: TicketsService,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
   ) {
     this.xendit = new Xendit({
       secretKey: this.configService.get<string>('XENDIT_SECRET_KEY') || '',
@@ -143,6 +146,9 @@ export class OrdersService {
       if (!order) return;
       if (order.status !== OrderStatus.PENDING) return; // Already paid or expired
 
+      // Fetch user separately to avoid FOR UPDATE on outer join error
+      const user = await manager.findOne(User, { where: { id: order.userId } });
+
       order.status = OrderStatus.EXPIRED;
       await manager.save(order);
 
@@ -154,6 +160,15 @@ export class OrdersService {
       if (event) {
         event.quota += order.quantity;
         await manager.save(event);
+      }
+
+      if (user) {
+        await this.notificationsService.enqueuePaymentNotification(
+          order.id,
+          user.email,
+          user.name,
+          OrderStatus.EXPIRED,
+        );
       }
     });
   }

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
+import { forwardRef } from '@nestjs/common';
+import { NotificationsModule } from '../notifications/notifications.module.js';
 
 import { TicketsController } from './tickets.controller.js';
 import { TicketsService } from './tickets.service.js';
@@ -23,6 +25,7 @@ import { Event } from '../events/entities/event.entity.js';
     BullModule.registerQueue({
       name: 'tickets',
     }),
+    forwardRef(() => NotificationsModule),
   ],
   controllers: [TicketsController],
   providers: [TicketsService, TicketProcessor],
