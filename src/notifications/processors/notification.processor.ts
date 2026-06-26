@@ -16,14 +16,29 @@ export class NotificationProcessor extends WorkerHost {
 
     try {
       if (job.name === 'send-ticket-email') {
-        await this.notificationsService.sendTicketEmail(job.data);
+        await this.notificationsService.sendTicketEmail(
+          job.data as Parameters<
+            typeof this.notificationsService.sendTicketEmail
+          >[0],
+        );
       } else if (job.name === 'send-payment-notification') {
-        await this.notificationsService.sendPaymentNotification(job.data);
+        await this.notificationsService.sendPaymentNotification(
+          job.data as Parameters<
+            typeof this.notificationsService.sendPaymentNotification
+          >[0],
+        );
       } else if (job.name === 'send-event-reminder') {
-        await this.notificationsService.sendEventReminder(job.data);
+        await this.notificationsService.sendEventReminder(
+          job.data as Parameters<
+            typeof this.notificationsService.sendEventReminder
+          >[0],
+        );
       }
     } catch (error) {
-      this.logger.error(`Failed to process job ${job.name}`, error instanceof Error ? error.stack : String(error));
+      this.logger.error(
+        `Failed to process job ${job.name}`,
+        error instanceof Error ? error.stack : String(error),
+      );
       throw error;
     }
   }

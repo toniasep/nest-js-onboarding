@@ -1,4 +1,10 @@
-import { Controller, Post, Body, Headers, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Headers,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OrdersService } from './orders.service.js';
 
@@ -10,8 +16,13 @@ export class PaymentsController {
   ) {}
 
   @Post('webhook')
-  async handleXenditWebhook(@Headers('x-callback-token') callbackToken: string, @Body() body: any) {
-    const expectedToken = this.configService.get<string>('XENDIT_WEBHOOK_TOKEN');
+  async handleXenditWebhook(
+    @Headers('x-callback-token') callbackToken: string,
+    @Body() body: { external_id?: string; status?: string },
+  ) {
+    const expectedToken = this.configService.get<string>(
+      'XENDIT_WEBHOOK_TOKEN',
+    );
     if (expectedToken && callbackToken !== expectedToken) {
       throw new UnauthorizedException('Invalid callback token');
     }

@@ -7,6 +7,8 @@ import { Role } from '../entities/user.entity.js';
  * Endpoint: PATCH /users/:id/role
  */
 export class UpdateRoleDto {
-  @IsEnum(Role, { message: `role must be either ${Role.ADMIN} or ${Role.USER}` })
+  @IsEnum(Role, {
+    message: `role must be either ${Role.ADMIN} or ${Role.USER}`,
+  })
   role!: Role;
 }

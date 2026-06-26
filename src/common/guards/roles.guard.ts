@@ -31,10 +31,10 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     // Ambil roles yang dibutuhkan dari metadata @Roles()
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     // Jika tidak ada @Roles() decorator, akses diizinkan
     if (!requiredRoles || requiredRoles.length === 0) {
@@ -42,7 +42,9 @@ export class RolesGuard implements CanActivate {
     }
 
     // Ambil user dari request (di-set oleh JwtAuthGuard)
-    const request = context.switchToHttp().getRequest<{ user?: { role?: string } }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<{ user?: { role?: string } }>();
     const user = request.user;
 
     // Guard clause: user harus ada

@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
  * Interface untuk JWT payload
  */
 export interface JwtPayload {
-  sub: string;   // User ID
+  sub: string; // User ID
   email: string;
   role: string;
 }

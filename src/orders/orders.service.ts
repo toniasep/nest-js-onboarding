@@ -1,4 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException, Logger, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -22,7 +29,8 @@ export class OrdersService {
     @InjectRepository(Order)
     private readonly ordersRepository: Repository<Order>,
     private readonly dataSource: DataSource,
-    @InjectQueue('orders') private ordersQueue: Queue,
+    @InjectQueue('orders')
+    private ordersQueue: Queue,
     private configService: ConfigService,
     @Inject(forwardRef(() => TicketsService))
     private readonly ticketsService: TicketsService,
@@ -43,8 +51,10 @@ export class OrdersService {
       });
 
       if (!event) throw new NotFoundException('Event not found');
-      if (!event.isPublished) throw new BadRequestException('Event is not published');
-      if (event.quota < createDto.quantity) throw new BadRequestException('Not enough quota');
+      if (!event.isPublished)
+        throw new BadRequestException('Event is not published');
+      if (event.quota < createDto.quantity)
+        throw new BadRequestException('Not enough quota');
 
       // 2. Decrease quota
       event.quota -= createDto.quantity;
@@ -71,7 +81,7 @@ export class OrdersService {
             payerEmail: email,
             description: `Payment for Event: ${event.title}`,
             invoiceDuration: 900, // 15 mins
-          }
+          },
         });
 
         savedOrder.paymentUrl = invoice.invoiceUrl || null;
@@ -117,13 +127,15 @@ export class OrdersService {
     });
   }
 
-  async handleWebhook(body: any) {
+  async handleWebhook(body: { external_id?: string; status?: string }) {
     const externalId = body.external_id;
     const status = body.status;
 
     if (!externalId) return;
 
-    const order = await this.ordersRepository.findOne({ where: { id: externalId } });
+    const order = await this.ordersRepository.findOne({
+      where: { id: externalId },
+    });
     if (!order) return;
 
     if (status === 'PAID' || status === 'SETTLED') {

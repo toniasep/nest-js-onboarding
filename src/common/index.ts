@@ -6,7 +6,10 @@ export { ResponseTransformInterceptor } from './interceptors/response-transform.
 export { LoggingInterceptor } from './interceptors/logging.interceptor.js';
 
 // ─── Decorators ───────────────────────────────────────────
-export { SkipResponseTransform, SKIP_RESPONSE_TRANSFORM_KEY } from './decorators/skip-response-transform.decorator.js';
+export {
+  SkipResponseTransform,
+  SKIP_RESPONSE_TRANSFORM_KEY,
+} from './decorators/skip-response-transform.decorator.js';
 export { Roles } from './decorators/roles.decorator.js';
 export { CurrentUser } from './decorators/current-user.decorator.js';
 

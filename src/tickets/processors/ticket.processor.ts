@@ -23,7 +23,7 @@ export class TicketProcessor extends WorkerHost {
     this.logger.debug(`Processing job ${job.id} of type ${job.name}`);
 
     if (job.name === 'generate-tickets') {
-      const { orderId } = job.data;
+      const { orderId } = job.data as { orderId: string };
 
       try {
         await this.ticketsService.createTickets(orderId);

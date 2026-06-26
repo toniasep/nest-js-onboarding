@@ -40,7 +40,9 @@ export async function paginate<T extends ObjectLiteral>(
   const { page, limit, sortBy, sortOrder } = paginationDto;
 
   // Guard clause: Pastikan sortBy field ada di whitelist untuk mencegah SQL injection
-  const safeSortField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+  const safeSortField = allowedSortFields.includes(sortBy)
+    ? sortBy
+    : 'createdAt';
 
   const skip = (page - 1) * limit;
 

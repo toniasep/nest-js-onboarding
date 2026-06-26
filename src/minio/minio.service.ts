@@ -22,14 +22,24 @@ export class MinioService implements OnModuleInit {
     this.client = new Minio.Client({
       endPoint: this.configService.get<string>('MINIO_ENDPOINT', 'localhost'),
       port: this.configService.get<number>('MINIO_PORT', 9000),
-      useSSL: this.configService.get<string>('MINIO_USE_SSL', 'false') === 'true',
-      accessKey: this.configService.get<string>('MINIO_ACCESS_KEY', 'minioadmin'),
-      secretKey: this.configService.get<string>('MINIO_SECRET_KEY', 'minioadmin'),
+      useSSL:
+        this.configService.get<string>('MINIO_USE_SSL', 'false') === 'true',
+      accessKey: this.configService.get<string>(
+        'MINIO_ACCESS_KEY',
+        'minioadmin',
+      ),
+      secretKey: this.configService.get<string>(
+        'MINIO_SECRET_KEY',
+        'minioadmin',
+      ),
     });
   }
 
   async onModuleInit(): Promise<void> {
-    const bucketName = this.configService.get<string>('MINIO_BUCKET_TICKETS', 'tickets');
+    const bucketName = this.configService.get<string>(
+      'MINIO_BUCKET_TICKETS',
+      'tickets',
+    );
     await this.ensureBucketExists(bucketName);
   }
 
@@ -91,7 +101,10 @@ export class MinioService implements OnModuleInit {
    * @param objectName - Nama/path object
    * @returns Readable stream dari file
    */
-  async getFileStream(bucketName: string, objectName: string): Promise<Readable> {
+  async getFileStream(
+    bucketName: string,
+    objectName: string,
+  ): Promise<Readable> {
     return this.client.getObject(bucketName, objectName);
   }
 }

@@ -37,7 +37,7 @@ export class TicketsController {
    * GET /tickets — List semua tiket milik current user
    */
   @Get()
-  findAll(@Request() req: any) {
+  findAll(@Request() req: { user: { id: string } }) {
     return this.ticketsService.findAllByUser(req.user.id);
   }
 
@@ -45,7 +45,10 @@ export class TicketsController {
    * GET /tickets/:id — Detail tiket
    */
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string, @Request() req: any) {
+  findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Request() req: { user: { id: string } },
+  ) {
     return this.ticketsService.findOne(id, req.user.id);
   }
 
@@ -60,7 +63,7 @@ export class TicketsController {
   @SkipResponseTransform()
   async download(
     @Param('id', ParseUUIDPipe) id: string,
-    @Request() req: any,
+    @Request() req: { user?: { id: string } },
     @Res() res: Response,
   ) {
     const userId = req.user?.id; // Bisa undefined karena Public()

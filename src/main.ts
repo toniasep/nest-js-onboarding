@@ -21,9 +21,9 @@ async function bootstrap() {
   // Validasi semua incoming request DTO menggunakan class-validator
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,           // Strip properti yang tidak ada di DTO
+      whitelist: true, // Strip properti yang tidak ada di DTO
       forbidNonWhitelisted: true, // Tolak request jika ada properti tak dikenal
-      transform: true,           // Auto-transform payload ke DTO instance
+      transform: true, // Auto-transform payload ke DTO instance
       transformOptions: {
         enableImplicitConversion: true,
       },
@@ -49,7 +49,12 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`🚀 Application is running on: http://localhost:${port}/api`);
-  logger.log(`📝 Environment: ${configService.get<string>('APP_ENV', 'development')}`);
+  logger.log(
+    `📝 Environment: ${configService.get<string>('APP_ENV', 'development')}`,
+  );
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Error during bootstrap:', err);
+  process.exit(1);
+});

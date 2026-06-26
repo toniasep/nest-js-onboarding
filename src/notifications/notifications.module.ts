@@ -25,7 +25,10 @@ import { TicketsModule } from '../tickets/tickets.module.js';
           },
         },
         defaults: {
-          from: configService.get('SMTP_FROM', '"No Reply" <noreply@example.com>'),
+          from: configService.get(
+            'SMTP_FROM',
+            '"No Reply" <noreply@example.com>',
+          ),
         },
         template: {
           dir: join(process.cwd(), 'src/notifications/templates'),

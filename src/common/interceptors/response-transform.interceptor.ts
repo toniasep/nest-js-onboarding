@@ -25,9 +25,10 @@ export interface WrappedResponse<T> {
 }
 
 @Injectable()
-export class ResponseTransformInterceptor<T>
-  implements NestInterceptor<T, WrappedResponse<T>>
-{
+export class ResponseTransformInterceptor<T> implements NestInterceptor<
+  T,
+  WrappedResponse<T>
+> {
   constructor(private readonly reflector: Reflector) {}
 
   intercept(
@@ -44,8 +45,6 @@ export class ResponseTransformInterceptor<T>
       return next.handle() as Observable<WrappedResponse<T>>;
     }
 
-    return next.handle().pipe(
-      map((data: T) => ({ data })),
-    );
+    return next.handle().pipe(map((data: T) => ({ data })));
   }
 }

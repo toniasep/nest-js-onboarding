@@ -15,7 +15,13 @@ export class NotificationsService {
   /**
    * Enqueue job for sending ticket email
    */
-  async enqueueTicketEmail(orderId: string, email: string, name: string, eventTitle: string, ticketUrls: string[]) {
+  async enqueueTicketEmail(
+    orderId: string,
+    email: string,
+    name: string,
+    eventTitle: string,
+    ticketUrls: string[],
+  ) {
     await this.notificationsQueue.add('send-ticket-email', {
       orderId,
       email,
@@ -29,20 +35,33 @@ export class NotificationsService {
   /**
    * Enqueue job for payment notification
    */
-  async enqueuePaymentNotification(orderId: string, email: string, name: string, status: string) {
+  async enqueuePaymentNotification(
+    orderId: string,
+    email: string,
+    name: string,
+    status: string,
+  ) {
     await this.notificationsQueue.add('send-payment-notification', {
       orderId,
       email,
       name,
       status,
     });
-    this.logger.log(`Enqueued payment notification for order ${orderId} (Status: ${status})`);
+    this.logger.log(
+      `Enqueued payment notification for order ${orderId} (Status: ${status})`,
+    );
   }
 
   /**
    * Enqueue job for event reminder
    */
-  async enqueueEventReminder(email: string, name: string, eventTitle: string, eventDate: string, location: string) {
+  async enqueueEventReminder(
+    email: string,
+    name: string,
+    eventTitle: string,
+    eventDate: string,
+    location: string,
+  ) {
     await this.notificationsQueue.add('send-event-reminder', {
       email,
       name,
@@ -50,13 +69,21 @@ export class NotificationsService {
       eventDate,
       location,
     });
-    this.logger.log(`Enqueued event reminder for ${email} (Event: ${eventTitle})`);
+    this.logger.log(
+      `Enqueued event reminder for ${email} (Event: ${eventTitle})`,
+    );
   }
 
   /**
    * Process Send Ticket Email
    */
-  async sendTicketEmail(data: any) {
+  async sendTicketEmail(data: {
+    email: string;
+    name: string;
+    eventTitle: string;
+    orderId: string;
+    ticketUrls: string[];
+  }) {
     try {
       await this.mailerService.sendMail({
         to: data.email,
@@ -79,7 +106,12 @@ export class NotificationsService {
   /**
    * Process Send Payment Notification
    */
-  async sendPaymentNotification(data: any) {
+  async sendPaymentNotification(data: {
+    email: string;
+    name: string;
+    orderId: string;
+    status: string;
+  }) {
     try {
       if (data.status === 'EXPIRED') {
         await this.mailerService.sendMail({
@@ -91,13 +123,18 @@ export class NotificationsService {
             orderId: data.orderId,
           },
         });
-        this.logger.log(`Successfully sent order expired email to ${data.email}`);
+        this.logger.log(
+          `Successfully sent order expired email to ${data.email}`,
+        );
       }
       // For PAID status, the ticket email will handle it (or we can send a separate payment success).
       // Based on checklist: "Template: Payment Successful + Download Link Tiket"
       // So ticket email serves as payment successful. We only need order expired here.
     } catch (error) {
-      this.logger.error(`Failed to send payment notification to ${data.email}`, error);
+      this.logger.error(
+        `Failed to send payment notification to ${data.email}`,
+        error,
+      );
       throw error;
     }
   }
@@ -105,7 +142,13 @@ export class NotificationsService {
   /**
    * Process Send Event Reminder
    */
-  async sendEventReminder(data: any) {
+  async sendEventReminder(data: {
+    email: string;
+    name: string;
+    eventTitle: string;
+    eventDate: string;
+    location: string;
+  }) {
     try {
       await this.mailerService.sendMail({
         to: data.email,
@@ -120,7 +163,10 @@ export class NotificationsService {
       });
       this.logger.log(`Successfully sent event reminder to ${data.email}`);
     } catch (error) {
-      this.logger.error(`Failed to send event reminder to ${data.email}`, error);
+      this.logger.error(
+        `Failed to send event reminder to ${data.email}`,
+        error,
+      );
       throw error;
     }
   }

@@ -15,7 +15,7 @@ export class OrderProcessor extends WorkerHost {
     this.logger.debug(`Processing job ${job.id} of type ${job.name}`);
 
     if (job.name === 'expire-order') {
-      const { orderId } = job.data;
+      const { orderId } = job.data as { orderId: string };
       await this.ordersService.expireOrder(orderId);
       this.logger.debug(`Processed expire-order for order ${orderId}`);
     }

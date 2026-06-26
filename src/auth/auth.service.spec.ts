@@ -62,7 +62,9 @@ describe('AuthService', () => {
 
     it('should register a new user successfully', async () => {
       usersService.findByEmail!.mockResolvedValue(null);
-      (mockedBcrypt.hash as jest.Mock).mockResolvedValue('$2b$10$hashedpassword');
+      (mockedBcrypt.hash as jest.Mock).mockResolvedValue(
+        '$2b$10$hashedpassword',
+      );
       usersService.create!.mockResolvedValue(mockUser);
 
       const result = await authService.register(registerDto);
@@ -114,8 +116,13 @@ describe('AuthService', () => {
 
       const result = await authService.login(loginDto);
 
-      expect(usersService.findByEmailWithPassword).toHaveBeenCalledWith('test@example.com');
-      expect(mockedBcrypt.compare).toHaveBeenCalledWith('password123', mockUser.password);
+      expect(usersService.findByEmailWithPassword).toHaveBeenCalledWith(
+        'test@example.com',
+      );
+      expect(mockedBcrypt.compare).toHaveBeenCalledWith(
+        'password123',
+        mockUser.password,
+      );
       expect(result).toEqual({
         user: {
           id: mockUser.id,

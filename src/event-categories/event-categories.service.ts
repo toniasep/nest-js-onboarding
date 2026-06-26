@@ -50,7 +50,10 @@ export class EventCategoriesService {
     return category;
   }
 
-  async update(id: string, updateDto: UpdateEventCategoryDto): Promise<EventCategory> {
+  async update(
+    id: string,
+    updateDto: UpdateEventCategoryDto,
+  ): Promise<EventCategory> {
     const category = await this.findOne(id);
     Object.assign(category, updateDto);
     return this.categoryRepository.save(category);

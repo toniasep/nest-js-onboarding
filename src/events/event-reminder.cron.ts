@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Event } from './entities/event.entity.js';
@@ -16,7 +16,7 @@ export class EventReminderCron {
     @InjectRepository(Ticket)
     private readonly ticketsRepository: Repository<Ticket>,
     private readonly notificationsService: NotificationsService,
-  ) { }
+  ) {}
 
   // Run every day at midnight
   @Cron('* * * * *') // for testing
@@ -53,7 +53,9 @@ export class EventReminderCron {
         relations: { user: true },
       });
 
-      this.logger.debug(`Sending ${tickets.length} reminders for event ${event.id}`);
+      this.logger.debug(
+        `Sending ${tickets.length} reminders for event ${event.id}`,
+      );
 
       // We should use a Map or Set to prevent sending multiple emails to the same user if they bought multiple tickets
       const sentUserIds = new Set<string>();

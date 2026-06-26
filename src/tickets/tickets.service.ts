@@ -46,7 +46,7 @@ export class TicketsService {
     private readonly minioService: MinioService,
     @Inject(forwardRef(() => NotificationsService))
     private readonly notificationsService: NotificationsService,
-  ) { }
+  ) {}
 
   /**
    * Enqueue BullMQ job untuk generate tiket.
@@ -76,7 +76,9 @@ export class TicketsService {
     }
 
     if (order.status !== OrderStatus.PAID) {
-      this.logger.warn(`Order ${orderId} is not PAID, skipping ticket generation`);
+      this.logger.warn(
+        `Order ${orderId} is not PAID, skipping ticket generation`,
+      );
       return;
     }
 
@@ -85,7 +87,9 @@ export class TicketsService {
       where: { orderId },
     });
     if (existingTickets > 0) {
-      this.logger.warn(`Tickets already generated for order ${orderId}, skipping`);
+      this.logger.warn(
+        `Tickets already generated for order ${orderId}, skipping`,
+      );
       return;
     }
 
@@ -100,7 +104,7 @@ export class TicketsService {
 
     // Enqueue notification email
     const ticketUrls = createdTickets.map(
-      (t) => `http://localhost:3000/api/tickets/${t.id}/download`
+      (t) => `http://localhost:3000/api/tickets/${t.id}/download`,
     );
     await this.notificationsService.enqueueTicketEmail(
       orderId,
@@ -114,7 +118,10 @@ export class TicketsService {
   /**
    * Generate 1 tiket individual: create record, QR, PDF, upload.
    */
-  private async createSingleTicket(order: Order, index: number): Promise<Ticket> {
+  private async createSingleTicket(
+    order: Order,
+    index: number,
+  ): Promise<Ticket> {
     const ticketCode = randomUUID();
 
     // 1. Create ticket record di DB
@@ -131,7 +138,12 @@ export class TicketsService {
     const qrBuffer = await this.generateQrCode(ticketCode);
 
     // 3. Generate PDF buffer
-    const pdfBuffer = await this.generatePdf(order, ticketCode, qrBuffer, index);
+    const pdfBuffer = await this.generatePdf(
+      order,
+      ticketCode,
+      qrBuffer,
+      index,
+    );
 
     // 4. Upload ke Minio
     const qrObjectName = `qr/${ticketCode}.png`;
@@ -156,7 +168,9 @@ export class TicketsService {
     savedTicket.pdfUrl = pdfObjectName;
     await this.ticketsRepository.save(savedTicket);
 
-    this.logger.debug(`Created ticket ${ticketCode} (${index}/${order.quantity})`);
+    this.logger.debug(
+      `Created ticket ${ticketCode} (${index}/${order.quantity})`,
+    );
     return savedTicket;
   }
 

@@ -28,11 +28,11 @@ export class EventsService {
     const skip = (page - 1) * limit;
 
     const where: FindOptionsWhere<Event> = {};
-    
+
     if (search) {
       where.title = Like(`%${search}%`);
     }
-    
+
     if (categoryId) {
       where.categoryId = categoryId;
     }

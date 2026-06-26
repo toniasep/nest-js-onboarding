@@ -21,7 +21,9 @@ import { Role } from '../users/entities/user.entity.js';
 
 @Controller('event-categories')
 export class EventCategoriesController {
-  constructor(private readonly eventCategoriesService: EventCategoriesService) {}
+  constructor(
+    private readonly eventCategoriesService: EventCategoriesService,
+  ) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)

@@ -38,7 +38,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       if (typeof exceptionResponse === 'string') {
         errors = [{ key: 'message', value: exceptionResponse }];
-      } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+      } else if (
+        typeof exceptionResponse === 'object' &&
+        exceptionResponse !== null
+      ) {
         const responseBody = exceptionResponse as Record<string, unknown>;
 
         // Handle class-validator errors (ValidationPipe)
@@ -55,7 +58,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             return { key: 'validation', value: msg };
           });
         } else if (typeof responseBody['message'] === 'string') {
-          errors = [{ key: 'message', value: responseBody['message'] as string }];
+          errors = [{ key: 'message', value: responseBody['message'] }];
         } else {
           errors = [{ key: 'message', value: exception.message }];
         }
@@ -80,7 +83,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       );
     } else {
       errors = [{ key: 'server', value: 'An unexpected error occurred' }];
-      this.logger.error(`[${request.method}] ${request.url} — Unknown error`, String(exception));
+      this.logger.error(
+        `[${request.method}] ${request.url} — Unknown error`,
+        String(exception),
+      );
     }
 
     response.status(status).json({ errors });
