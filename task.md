@@ -322,20 +322,20 @@ Menerapkan fundamental NestJS:
 
 ### Checklist
 
-- [ ] Buat `DashboardModule`, `DashboardController`, `DashboardService`
-- [ ] Implementasi **Total Penjualan by Date Range** (`GET /admin/dashboard/sales`)
-  - [ ] Query parameter: `startDate`, `endDate`
-  - [ ] Return: total orders, total revenue, total tickets sold
-- [ ] Implementasi **Top Events by Revenue** (`GET /admin/dashboard/top-events`)
-  - [ ] Query parameter: `startDate`, `endDate`, `limit`
-  - [ ] Return: ranked list of events by total amount penjualan
-- [ ] Implementasi **Top Event Categories by Revenue** (`GET /admin/dashboard/top-categories`)
-  - [ ] Query parameter: `startDate`, `endDate`, `limit`
-  - [ ] Return: ranked list of categories by total amount penjualan
-- [ ] Implementasi **Export Laporan** (`GET /admin/dashboard/export`)
-  - [ ] Export data penjualan ke format CSV/Excel
-  - [ ] Upload file ke Minio, return download link
-- [ ] Redis Caching untuk dashboard queries (heavy aggregation)
+- [x] Buat `DashboardModule`, `DashboardController`, `DashboardService`
+- [x] Implementasi **Total Penjualan by Date Range** (`GET /admin/dashboard/sales`)
+  - [x] Query parameter: `startDate`, `endDate`
+  - [x] Return: total orders, total revenue, total tickets sold
+- [x] Implementasi **Top Events by Revenue** (`GET /admin/dashboard/top-events`)
+  - [x] Query parameter: `startDate`, `endDate`, `limit`
+  - [x] Return: ranked list of events by total amount penjualan
+- [x] Implementasi **Top Event Categories by Revenue** (`GET /admin/dashboard/top-categories`)
+  - [x] Query parameter: `startDate`, `endDate`, `limit`
+  - [x] Return: ranked list of categories by total amount penjualan
+- [x] Implementasi **Export Laporan** (`GET /admin/dashboard/export`)
+  - [x] Export data penjualan ke format CSV/Excel
+  - [x] Upload file ke Minio, return download link
+- [x] Redis Caching untuk dashboard queries (heavy aggregation)
 
 ### Endpoints
 

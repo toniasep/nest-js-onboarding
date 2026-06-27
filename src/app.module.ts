@@ -17,6 +17,7 @@ import { TicketsModule } from './tickets/tickets.module.js';
 import { MinioModule } from './minio/minio.module.js';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsModule } from './notifications/notifications.module.js';
+import { DashboardModule } from './dashboard/dashboard.module.js';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { NotificationsModule } from './notifications/notifications.module.js';
     TicketsModule,
     MinioModule,
     NotificationsModule,
+    DashboardModule,
     ScheduleModule.forRoot(),
 
     // ─── BullMQ Module (Redis) ────────────────────────────────
