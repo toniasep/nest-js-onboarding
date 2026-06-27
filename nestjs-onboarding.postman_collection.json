@@ -1050,6 +1050,106 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Dashboard",
+      "description": "Admin-only endpoints untuk melihat ringkasan penjualan, top event, top category, dan export laporan.",
+      "item": [
+        {
+          "name": "Get Sales Summary (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/dashboard/sales?startDate=2026-01-01&endDate=2026-12-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "dashboard", "sales"],
+              "query": [
+                { "key": "startDate", "value": "2026-01-01" },
+                { "key": "endDate", "value": "2026-12-31" }
+              ]
+            },
+            "description": "Total penjualan berdasarkan rentang tanggal."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Top Events (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/dashboard/top-events?startDate=2026-01-01&endDate=2026-12-31&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "dashboard", "top-events"],
+              "query": [
+                { "key": "startDate", "value": "2026-01-01" },
+                { "key": "endDate", "value": "2026-12-31" },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "Top events berdasarkan total revenue."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Top Categories (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/dashboard/top-categories?startDate=2026-01-01&endDate=2026-12-31&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "dashboard", "top-categories"],
+              "query": [
+                { "key": "startDate", "value": "2026-01-01" },
+                { "key": "endDate", "value": "2026-12-31" },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "Top categories berdasarkan total revenue."
+          },
+          "response": []
+        },
+        {
+          "name": "Export Report (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/dashboard/export?startDate=2026-01-01&endDate=2026-12-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "dashboard", "export"],
+              "query": [
+                { "key": "startDate", "value": "2026-01-01" },
+                { "key": "endDate", "value": "2026-12-31" }
+              ]
+            },
+            "description": "Export data penjualan ke file Excel (.xlsx)."
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [
@@ -1106,6 +1206,18 @@
       "value": "",
       "type": "string",
       "description": "UUID ticketCode from QR Code"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string",
+      "description": "UUID of order"
+    },
+    {
+      "key": "xenditWebhookToken",
+      "value": "2ZWH8DM3luSR4TxXzBbWGr0pawLohFQRyoPrxyX6NJgQx2jO",
+      "type": "string",
+      "description": "Xendit webhook verification token"
     }
   ]
 }
