@@ -5,19 +5,20 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { UsersModule } from './users/users.module.js';
-import { AuthModule } from './auth/auth.module.js';
-import { EventCategoriesModule } from './event-categories/event-categories.module.js';
-import { EventsModule } from './events/events.module.js';
+import { UsersModule } from './modules/users/users.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
+import { EventCategoriesModule } from './modules/event-categories/event-categories.module.js';
+import { EventsModule } from './modules/events/events.module.js';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { BullModule } from '@nestjs/bullmq';
-import { OrdersModule } from './orders/orders.module.js';
-import { TicketsModule } from './tickets/tickets.module.js';
-import { MinioModule } from './minio/minio.module.js';
+import { OrdersModule } from './modules/orders/orders.module.js';
+import { TicketsModule } from './modules/tickets/tickets.module.js';
+import { MinioModule } from './infrastructures/minio/minio.module.js';
 import { ScheduleModule } from '@nestjs/schedule';
-import { NotificationsModule } from './notifications/notifications.module.js';
-import { DashboardModule } from './dashboard/dashboard.module.js';
+import { NotificationsModule } from './modules/notifications/notifications.module.js';
+import { DashboardModule } from './modules/dashboard/dashboard.module.js';
+import { XenditModule } from './infrastructures/xendit/xendit.module.js';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { DashboardModule } from './dashboard/dashboard.module.js';
     NotificationsModule,
     DashboardModule,
     ScheduleModule.forRoot(),
+    XenditModule,
 
     // ─── BullMQ Module (Redis) ────────────────────────────────
     BullModule.forRootAsync({

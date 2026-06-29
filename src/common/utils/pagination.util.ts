@@ -2,7 +2,7 @@ import { SelectQueryBuilder, ObjectLiteral } from 'typeorm';
 import { PaginationDto } from '../dto/pagination.dto.js';
 
 /**
- * Interface untuk paginated response
+ * Interface untuk paginated response (QueryBuilder-based, menggunakan items + meta.totalItems)
  */
 export interface PaginatedResult<T> {
   items: T[];
@@ -13,6 +13,19 @@ export interface PaginatedResult<T> {
     totalPages: number;
     hasNextPage: boolean;
     hasPreviousPage: boolean;
+  };
+}
+
+/**
+ * Interface untuk paginated response (findAndCount-based, menggunakan data + meta.total)
+ */
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
   };
 }
 

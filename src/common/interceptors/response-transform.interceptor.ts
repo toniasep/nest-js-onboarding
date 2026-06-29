@@ -45,6 +45,14 @@ export class ResponseTransformInterceptor<T> implements NestInterceptor<
       return next.handle() as Observable<WrappedResponse<T>>;
     }
 
-    return next.handle().pipe(map((data: T) => ({ data })));
+    return next.handle().pipe(
+      map((data: T) => {
+        // If data already has a message property, we could use it, but for standard we wrap it
+        return {
+          message: 'Success',
+          data,
+        };
+      }),
+    );
   }
 }

@@ -1,0 +1,7 @@
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  WAITING_PAYMENT = 'WAITING_PAYMENT',
+  PAID = 'PAID',
+  CANCEL = 'CANCEL',
+  EXPIRED = 'EXPIRED',
+}
