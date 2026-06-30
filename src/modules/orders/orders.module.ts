@@ -1,18 +1,18 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
-import { OrdersController } from './orders.controller.js';
-import { AdminOrdersController } from './admin-orders.controller.js';
-import { PaymentsController } from './payments.controller.js';
-import { OrdersService } from './orders.service.js';
-import { Order } from './entities/order.entity.js';
-import { Event } from '../events/entities/event.entity.js';
-import { OrderProcessor } from './processors/order.processor.js';
+import { OrdersController } from './controllers/v1/orders.v1.controller.js';
+import { AdminOrdersController } from './controllers/v1/admin-orders.v1.controller.js';
+import { PaymentsController } from './controllers/v1/payments.v1.controller.js';
+import { OrdersService } from './services/v1/orders.v1.service.js';
+import { Order } from '../../infrastructures/databases/entities/order.entity.js';
+import { Event } from '../../infrastructures/databases/entities/event.entity.js';
+import { OrderProcessor } from '../../infrastructures/modules/queue/processors/order.processor.js';
 import { TicketsModule } from '../tickets/tickets.module.js';
 import { NotificationsModule } from '../notifications/notifications.module.js';
-import { QueueName } from '../../common/enums/queue-name.enum.js';
-import { OrderRepository } from './repositories/order.repository.js';
-import { OrderEventRepository } from './repositories/order-event.repository.js';
+import { QueueName } from '../../shared/enums/queue-name.enum.js';
+import { OrderRepository } from './repositories/v1/orders.v1.repository.js';
+import { OrderEventRepository } from './repositories/v1/order-event.v1.repository.js';
 
 @Module({
   imports: [

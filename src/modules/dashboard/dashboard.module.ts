@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DashboardController } from './dashboard.controller.js';
-import { DashboardService } from './dashboard.service.js';
-import { Order } from '../orders/entities/order.entity.js';
-import { OrderAnalyticsRepository } from './repositories/order-analytics.repository.js';
+import { DashboardController } from './controllers/v1/dashboard.v1.controller.js';
+import { DashboardService } from './services/v1/dashboard.v1.service.js';
+import { Order } from '../../infrastructures/databases/entities/order.entity.js';
+import { OrderAnalyticsRepository } from './repositories/v1/order-analytics.v1.repository.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Order])],

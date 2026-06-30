@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity.js';
-import { UsersService } from './users.service.js';
-import { UserRepository } from './repositories/user.repository.js';
-import { UsersController } from './users.controller.js';
+import { User } from '../../infrastructures/databases/entities/user.entity.js';
+import { UsersService } from './services/v1/users.v1.service.js';
+import { UserRepository } from './repositories/v1/users.v1.repository.js';
+import { UsersController } from './controllers/v1/users.v1.controller.js';
 
 /**
  * Users Module

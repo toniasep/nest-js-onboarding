@@ -6,7 +6,7 @@ import {
   GlobalExceptionFilter,
   ResponseTransformInterceptor,
   LoggingInterceptor,
-} from './common/index.js';
+} from './shared/index.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

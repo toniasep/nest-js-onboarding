@@ -1,15 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { EventReminderCron } from './event-reminder.cron';
-import { Event } from './entities/event.entity';
-import { Ticket, TicketStatus } from '../tickets/entities/ticket.entity';
-import { NotificationsService } from '../notifications/notifications.service';
+import { EventRepository } from './repositories/v1/events.v1.repository';
+import { ReminderTicketRepository } from './repositories/v1/reminder-ticket.v1.repository';
+import { NotificationsService } from '../notifications/services/v1/notifications.v1.service';
+import { TicketStatus } from '../../infrastructures/databases/entities/ticket.entity';
 
 describe('EventReminderCron', () => {
   let cron: EventReminderCron;
-  let eventsRepository: jest.Mocked<Partial<Repository<Event>>>;
-  let ticketsRepository: jest.Mocked<Partial<Repository<Ticket>>>;
+  let eventRepository: jest.Mocked<Partial<EventRepository>>;
+  let reminderTicketRepository: jest.Mocked<Partial<ReminderTicketRepository>>;
   let notificationsService: jest.Mocked<Partial<NotificationsService>>;
 
   const mockEvent = {
@@ -36,7 +35,6 @@ describe('EventReminderCron', () => {
     user: { id: 'user-uuid-2', name: 'User 2', email: 'user2@example.com' },
   };
 
-  // Same user as ticket1, bought multiple tickets
   const mockTicket3 = {
     id: 'ticket-3',
     userId: 'user-uuid-1',
@@ -46,18 +44,12 @@ describe('EventReminderCron', () => {
   };
 
   beforeEach(async () => {
-    const mockQueryBuilder = {
-      where: jest.fn().mockReturnThis(),
-      andWhere: jest.fn().mockReturnThis(),
-      getMany: jest.fn(),
+    eventRepository = {
+      findEventsTomorrow: jest.fn(),
     };
 
-    eventsRepository = {
-      createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
-    };
-
-    ticketsRepository = {
-      find: jest.fn(),
+    reminderTicketRepository = {
+      findActiveTicketsByEventId: jest.fn(),
     };
 
     notificationsService = {
@@ -67,8 +59,11 @@ describe('EventReminderCron', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EventReminderCron,
-        { provide: getRepositoryToken(Event), useValue: eventsRepository },
-        { provide: getRepositoryToken(Ticket), useValue: ticketsRepository },
+        { provide: EventRepository, useValue: eventRepository },
+        {
+          provide: ReminderTicketRepository,
+          useValue: reminderTicketRepository,
+        },
         {
           provide: NotificationsService,
           useValue: notificationsService,
@@ -85,12 +80,12 @@ describe('EventReminderCron', () => {
 
   describe('handleCron', () => {
     it('should find events happening tomorrow and send reminders', async () => {
-      const qb = eventsRepository.createQueryBuilder!('event');
-      (qb as any).getMany.mockResolvedValue([mockEvent]);
-      ticketsRepository.find!.mockResolvedValue([
-        mockTicket1,
-        mockTicket2,
-      ] as any);
+      (eventRepository.findEventsTomorrow as jest.Mock).mockResolvedValue([
+        mockEvent,
+      ]);
+      (
+        reminderTicketRepository.findActiveTicketsByEventId as jest.Mock
+      ).mockResolvedValue([mockTicket1, mockTicket2] as any);
 
       await cron.handleCron();
 
@@ -114,16 +109,15 @@ describe('EventReminderCron', () => {
     });
 
     it('should skip duplicate reminders for same user (multiple tickets)', async () => {
-      const qb = eventsRepository.createQueryBuilder!('event');
-      (qb as any).getMany.mockResolvedValue([mockEvent]);
-      ticketsRepository.find!.mockResolvedValue([
-        mockTicket1,
-        mockTicket3, // same user as ticket1
-      ] as any);
+      (eventRepository.findEventsTomorrow as jest.Mock).mockResolvedValue([
+        mockEvent,
+      ]);
+      (
+        reminderTicketRepository.findActiveTicketsByEventId as jest.Mock
+      ).mockResolvedValue([mockTicket1, mockTicket3] as any);
 
       await cron.handleCron();
 
-      // Should only send 1 reminder even though user has 2 tickets
       expect(notificationsService.enqueueEventReminder).toHaveBeenCalledTimes(
         1,
       );
@@ -137,12 +131,13 @@ describe('EventReminderCron', () => {
     });
 
     it('should handle no events found', async () => {
-      const qb = eventsRepository.createQueryBuilder!('event');
-      (qb as any).getMany.mockResolvedValue([]);
+      (eventRepository.findEventsTomorrow as jest.Mock).mockResolvedValue([]);
 
       await cron.handleCron();
 
-      expect(ticketsRepository.find).not.toHaveBeenCalled();
+      expect(
+        reminderTicketRepository.findActiveTicketsByEventId,
+      ).not.toHaveBeenCalled();
       expect(notificationsService.enqueueEventReminder).not.toHaveBeenCalled();
     });
   });

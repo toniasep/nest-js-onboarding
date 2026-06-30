@@ -3,8 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { EventCategoriesModule } from './modules/event-categories/event-categories.module.js';
@@ -14,11 +12,11 @@ import { redisStore } from 'cache-manager-ioredis-yet';
 import { BullModule } from '@nestjs/bullmq';
 import { OrdersModule } from './modules/orders/orders.module.js';
 import { TicketsModule } from './modules/tickets/tickets.module.js';
-import { MinioModule } from './infrastructures/minio/minio.module.js';
+import { MinioModule } from './infrastructures/modules/storage/minio.module.js';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsModule } from './modules/notifications/notifications.module.js';
 import { DashboardModule } from './modules/dashboard/dashboard.module.js';
-import { XenditModule } from './infrastructures/xendit/xendit.module.js';
+import { XenditModule } from './infrastructures/integrations/xendit/xendit.module.js';
 
 @Module({
   imports: [
@@ -98,10 +96,7 @@ import { XenditModule } from './infrastructures/xendit/xendit.module.js';
       }),
     }),
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
-
     // Throttler guard global — rate limit semua endpoint
     {
       provide: APP_GUARD,

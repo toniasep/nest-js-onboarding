@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventsController } from './events.controller.js';
-import { EventsService } from './events.service.js';
-import { Event } from './entities/event.entity.js';
-import { Ticket } from '../tickets/entities/ticket.entity.js';
+import { EventsController } from './controllers/v1/events.v1.controller.js';
+import { EventsService } from './services/v1/events.v1.service.js';
+import { Event } from '../../infrastructures/databases/entities/event.entity.js';
+import { Ticket } from '../../infrastructures/databases/entities/ticket.entity.js';
 import { EventCategoriesModule } from '../event-categories/event-categories.module.js';
 import { NotificationsModule } from '../notifications/notifications.module.js';
 import { EventReminderCron } from './event-reminder.cron.js';
-import { EventRepository } from './repositories/event.repository.js';
-import { ReminderTicketRepository } from './repositories/reminder-ticket.repository.js';
+import { EventRepository } from './repositories/v1/events.v1.repository.js';
+import { ReminderTicketRepository } from './repositories/v1/reminder-ticket.v1.repository.js';
 
 @Module({
   imports: [

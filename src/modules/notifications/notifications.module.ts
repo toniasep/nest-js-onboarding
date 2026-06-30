@@ -5,9 +5,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import { join } from 'path';
 
-import { NotificationsService } from './notifications.service.js';
-import { NotificationProcessor } from './processors/notification.processor.js';
-import { QueueName } from '../../common/enums/queue-name.enum.js';
+import { NotificationsService } from './services/v1/notifications.v1.service.js';
+import { NotificationProcessor } from '../../infrastructures/modules/queue/processors/notification.processor.js';
+import { QueueName } from '../../shared/enums/queue-name.enum.js';
 import { TicketsModule } from '../tickets/tickets.module.js';
 
 @Module({
@@ -32,7 +32,7 @@ import { TicketsModule } from '../tickets/tickets.module.js';
           ),
         },
         template: {
-          dir: join(process.cwd(), 'src/notifications/templates'),
+          dir: join(process.cwd(), 'src/modules/notifications/templates'),
           adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
           options: {
             strict: true,

@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { NotificationsService } from '../notifications/notifications.service.js';
-import { EventRepository } from './repositories/event.repository.js';
-import { ReminderTicketRepository } from './repositories/reminder-ticket.repository.js';
+import { NotificationsService } from '../notifications/services/v1/notifications.v1.service.js';
+import { EventRepository } from './repositories/v1/events.v1.repository.js';
+import { ReminderTicketRepository } from './repositories/v1/reminder-ticket.v1.repository.js';
 
 @Injectable()
 export class EventReminderCron {
