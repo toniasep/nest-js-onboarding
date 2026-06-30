@@ -6,7 +6,7 @@ import { Roles } from '../../../../shared/decorators/roles.decorator.js';
 import { Role } from '../../../../infrastructures/databases/entities/user.entity.js';
 import { PaginationDto } from '../../../../shared/dtos/pagination.dto.js';
 import { PaginatedResult } from '../../../../shared/utils/pagination.util.js';
-import { Order } from '../../../../infrastructures/databases/entities/order.entity.js';
+import { OrderResponseDto } from '../../dtos/responses/v1/order-response.dto.js';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ADMIN)
@@ -17,7 +17,11 @@ export class AdminOrdersController {
   @Get()
   async findAll(
     @Query() paginationDto: PaginationDto,
-  ): Promise<PaginatedResult<Order>> {
-    return this.ordersService.findAllAdmin(paginationDto);
+  ): Promise<PaginatedResult<OrderResponseDto>> {
+    const result = await this.ordersService.findAllAdmin(paginationDto);
+    return {
+      meta: result.meta,
+      items: OrderResponseDto.MapEntities(result.items),
+    };
   }
 }

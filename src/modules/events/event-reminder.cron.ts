@@ -46,8 +46,8 @@ export class EventReminderCron {
       for (const ticket of tickets) {
         if (!sentUserIds.has(ticket.userId)) {
           await this.notificationsService.enqueueEventReminder(
-            ticket.user.email,
-            ticket.user.name,
+            ticket.user!.email,
+            ticket.user!.name,
             event.title,
             event.eventDate.toISOString(),
             event.location,

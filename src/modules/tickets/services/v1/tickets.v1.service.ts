@@ -14,11 +14,9 @@ import * as QRCode from 'qrcode';
 import PDFDocument from 'pdfkit';
 import { Readable } from 'stream';
 
-import {
-  Ticket,
-  TicketStatus,
-} from '../../../../infrastructures/databases/entities/ticket.entity.js';
-import { Order } from '../../../../infrastructures/databases/entities/order.entity.js';
+import { TicketStatus } from '../../../../infrastructures/databases/entities/ticket.entity.js';
+import { ITicket } from '../../../../infrastructures/databases/interfaces/ticket.interface.js';
+import { IOrder } from '../../../../infrastructures/databases/interfaces/order.interface.js';
 import { GenerateTicketDto } from '../../dtos/requests/v1/generate-ticket.dto.js';
 import { QueueName } from '../../../../shared/enums/queue-name.enum.js';
 import { OrderStatus } from '../../../../shared/enums/order-status.enum.js';
@@ -68,7 +66,7 @@ export class TicketsService {
       return;
     }
 
-    const createdTickets: Ticket[] = [];
+    const createdTickets: ITicket[] = [];
     for (let i = 0; i < order.quantity; i++) {
       createdTickets.push(await this.createSingleTicket(order, i + 1));
     }
@@ -82,17 +80,17 @@ export class TicketsService {
     );
     await this.notificationsService.enqueueTicketEmail(
       orderId,
-      order.user.email,
-      order.user.name,
-      order.event.title,
+      order.user!.email,
+      order.user!.name,
+      order.event!.title,
       ticketUrls,
     );
   }
 
   private async createSingleTicket(
-    order: Order,
+    order: IOrder,
     index: number,
-  ): Promise<Ticket> {
+  ): Promise<ITicket> {
     const ticketCode = randomUUID();
 
     const ticket = this.ticketRepository.create({
@@ -148,7 +146,7 @@ export class TicketsService {
   }
 
   private async generatePdf(
-    order: Order,
+    order: IOrder,
     ticketCode: string,
     qrBuffer: Buffer,
     index: number,
@@ -174,11 +172,11 @@ export class TicketsService {
         .stroke();
       doc.moveDown(1);
 
-      doc.fontSize(16).font('Helvetica-Bold').text(order.event.title);
+      doc.fontSize(16).font('Helvetica-Bold').text(order.event!.title);
       doc.moveDown(0.3);
       doc.fontSize(11).font('Helvetica').fillColor('#555555');
 
-      const eventDate = new Date(order.event.eventDate);
+      const eventDate = new Date(order.event!.eventDate);
       const formattedDate = eventDate.toLocaleDateString('id-ID', {
         weekday: 'long',
         year: 'numeric',
@@ -189,12 +187,12 @@ export class TicketsService {
       });
 
       doc.text(`${formattedDate}`);
-      doc.text(`${order.event.location}`);
+      doc.text(`${order.event!.location}`);
       doc.moveDown(1);
 
       doc.fillColor('#000000');
       doc.fontSize(11).font('Helvetica-Bold').text('Pemegang Tiket:');
-      doc.fontSize(11).font('Helvetica').text(order.user.name);
+      doc.fontSize(11).font('Helvetica').text(order.user!.name);
       doc.moveDown(0.3);
       doc.fontSize(11).font('Helvetica-Bold').text('Tiket:');
       doc
@@ -220,11 +218,11 @@ export class TicketsService {
     });
   }
 
-  async findAllByUser(userId: string): Promise<Ticket[]> {
+  async findAllByUser(userId: string): Promise<ITicket[]> {
     return this.ticketRepository.findAllByUser(userId);
   }
 
-  async findOne(id: string, userId?: string): Promise<Ticket> {
+  async findOne(id: string, userId?: string): Promise<ITicket> {
     const ticket = await this.ticketRepository.findById(id);
 
     if (!ticket) throw new NotFoundException('Ticket not found');
@@ -251,7 +249,7 @@ export class TicketsService {
     return { stream, ticketCode: ticket.ticketCode };
   }
 
-  async verifyTicket(ticketCode: string): Promise<Ticket> {
+  async verifyTicket(ticketCode: string): Promise<ITicket> {
     const ticket = await this.ticketRepository.findByTicketCode(ticketCode);
 
     if (!ticket)

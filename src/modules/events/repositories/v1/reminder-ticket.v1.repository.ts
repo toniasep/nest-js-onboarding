@@ -5,16 +5,19 @@ import {
   Ticket,
   TicketStatus,
 } from '../../../../infrastructures/databases/entities/ticket.entity.js';
+import { ITicket } from '../../../../infrastructures/databases/interfaces/ticket.interface.js';
 
 @Injectable()
-export class ReminderTicketRepository {
+export class ReminderTicketRepository extends Repository<ITicket> {
   constructor(
     @InjectRepository(Ticket)
-    private readonly repo: Repository<Ticket>,
-  ) {}
+    private readonly repo: Repository<ITicket>,
+  ) {
+    super(repo.target, repo.manager, repo.queryRunner);
+  }
 
-  async findActiveTicketsByEventId(eventId: string): Promise<Ticket[]> {
-    return this.repo.find({
+  async findActiveTicketsByEventId(eventId: string): Promise<ITicket[]> {
+    return this.find({
       where: { eventId, status: TicketStatus.ACTIVE },
       relations: { user: true },
     });

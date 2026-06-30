@@ -18,6 +18,7 @@ import { Roles } from '../../../../shared/decorators/roles.decorator.js';
 import { Public } from '../../../../shared/decorators/public.decorator.js';
 import { SkipResponseTransform } from '../../../../shared/decorators/skip-response-transform.decorator.js';
 import { Role } from '../../../../infrastructures/databases/entities/user.entity.js';
+import { TicketResponseDto } from '../../dtos/responses/v1/ticket-response.dto.js';
 
 /**
  * TicketsController
@@ -37,19 +38,23 @@ export class TicketsController {
    * GET /tickets — List semua tiket milik current user
    */
   @Get()
-  findAll(@Request() req: { user: { id: string } }) {
-    return this.ticketsService.findAllByUser(req.user.id);
+  async findAll(
+    @Request() req: { user: { id: string } },
+  ): Promise<TicketResponseDto[]> {
+    const data = await this.ticketsService.findAllByUser(req.user.id);
+    return TicketResponseDto.MapEntities(data);
   }
 
   /**
    * GET /tickets/:id — Detail tiket
    */
   @Get(':id')
-  findOne(
+  async findOne(
     @Param('id', ParseUUIDPipe) id: string,
     @Request() req: { user: { id: string } },
-  ) {
-    return this.ticketsService.findOne(id, req.user.id);
+  ): Promise<TicketResponseDto> {
+    const data = await this.ticketsService.findOne(id, req.user.id);
+    return TicketResponseDto.MapEntity(data);
   }
 
   /**
@@ -86,7 +91,12 @@ export class TicketsController {
   @Post('verify')
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  verify(@Body() verifyTicketDto: VerifyTicketDto) {
-    return this.ticketsService.verifyTicket(verifyTicketDto.ticketCode);
+  async verify(
+    @Body() verifyTicketDto: VerifyTicketDto,
+  ): Promise<TicketResponseDto> {
+    const data = await this.ticketsService.verifyTicket(
+      verifyTicketDto.ticketCode,
+    );
+    return TicketResponseDto.MapEntity(data);
   }
 }

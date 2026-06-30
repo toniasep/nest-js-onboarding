@@ -9,7 +9,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 import ExcelJS from 'exceljs';
 
-import { Order } from '../../../../infrastructures/databases/entities/order.entity.js';
+import { IOrder } from '../../../../infrastructures/databases/interfaces/order.interface.js';
 import { MinioService } from '../../../../infrastructures/modules/storage/minio.service.js';
 import { REPORTS_BUCKET } from '../../dashboard.constants.js';
 import {
@@ -196,7 +196,7 @@ export class DashboardService implements OnModuleInit {
   }
 
   private async buildExcelReport(
-    orders: Order[],
+    orders: IOrder[],
     dto: ExportQueryDto,
   ): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook();

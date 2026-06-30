@@ -23,6 +23,7 @@ import { Roles } from '../../../../shared/decorators/roles.decorator.js';
 import { Role } from '../../../../infrastructures/databases/entities/user.entity.js';
 import { Event } from '../../../../infrastructures/databases/entities/event.entity.js';
 import { PaginatedResponse } from '../../../../shared/utils/pagination.util.js';
+import { EventResponseDto } from '../../dtos/responses/v1/event-response.dto.js';
 
 @Controller('events')
 export class EventsController {
@@ -31,40 +32,55 @@ export class EventsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Post()
-  create(@Body() createDto: CreateEventDto): Promise<Event> {
-    return this.eventsService.create(createDto);
+  async create(@Body() createDto: CreateEventDto): Promise<EventResponseDto> {
+    const data = await this.eventsService.create(createDto);
+    return EventResponseDto.MapEntity(data);
   }
 
   // Public endpoint dengan Redis Caching (hanya event yang isPublished = true)
   @UseInterceptors(CacheInterceptor)
   @Get()
-  findAll(@Query() listDto: ListEventDto): Promise<PaginatedResponse<Event>> {
-    return this.eventsService.findAll(listDto, true);
+  async findAll(
+    @Query() listDto: ListEventDto,
+  ): Promise<PaginatedResponse<EventResponseDto>> {
+    const result = await this.eventsService.findAll(listDto, true);
+    return {
+      meta: result.meta,
+      data: EventResponseDto.MapEntities(result.data),
+    };
   }
 
   // Endpoint khusus Admin untuk melihat semua event (termasuk draft)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Get('all')
-  findAllAdmin(
+  async findAllAdmin(
     @Query() listDto: ListEventDto,
-  ): Promise<PaginatedResponse<Event>> {
-    return this.eventsService.findAll(listDto, false);
+  ): Promise<PaginatedResponse<EventResponseDto>> {
+    const result = await this.eventsService.findAll(listDto, false);
+    return {
+      meta: result.meta,
+      data: EventResponseDto.MapEntities(result.data),
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Event> {
-    return this.eventsService.findOne(id);
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<EventResponseDto> {
+    const data = await this.eventsService.findOne(id);
+    return EventResponseDto.MapEntity(data);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Put(':id')
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateDto: UpdateEventDto,
-  ): Promise<Event> {
-    return this.eventsService.update(id, updateDto);
+  ): Promise<EventResponseDto> {
+    const data = await this.eventsService.update(id, updateDto);
+    return EventResponseDto.MapEntity(data);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -77,7 +93,10 @@ export class EventsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Patch(':id/publish')
-  togglePublish(@Param('id', ParseUUIDPipe) id: string): Promise<Event> {
-    return this.eventsService.togglePublish(id);
+  async togglePublish(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<EventResponseDto> {
+    const data = await this.eventsService.togglePublish(id);
+    return EventResponseDto.MapEntity(data);
   }
 }

@@ -18,8 +18,8 @@ import { JwtAuthGuard } from '../../../../infrastructures/modules/jwt/guards/jwt
 import { RolesGuard } from '../../../../infrastructures/modules/jwt/guards/roles.guard.js';
 import { Roles } from '../../../../shared/decorators/roles.decorator.js';
 import { Role } from '../../../../infrastructures/databases/entities/user.entity.js';
-import { EventCategory } from '../../../../infrastructures/databases/entities/event-category.entity.js';
 import { PaginatedResponse } from '../../../../shared/utils/pagination.util.js';
+import { EventCategoryResponseDto } from '../../dtos/responses/v1/event-category-response.dto.js';
 
 @Controller('event-categories')
 export class EventCategoriesController {
@@ -30,30 +30,41 @@ export class EventCategoriesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Post()
-  create(@Body() createDto: CreateEventCategoryDto): Promise<EventCategory> {
-    return this.eventCategoriesService.create(createDto);
+  async create(
+    @Body() createDto: CreateEventCategoryDto,
+  ): Promise<EventCategoryResponseDto> {
+    const data = await this.eventCategoriesService.create(createDto);
+    return EventCategoryResponseDto.MapEntity(data);
   }
 
   @Get()
-  findAll(
+  async findAll(
     @Query() listDto: ListEventCategoryDto,
-  ): Promise<PaginatedResponse<EventCategory>> {
-    return this.eventCategoriesService.findAll(listDto);
+  ): Promise<PaginatedResponse<EventCategoryResponseDto>> {
+    const result = await this.eventCategoriesService.findAll(listDto);
+    return {
+      meta: result.meta,
+      data: EventCategoryResponseDto.MapEntities(result.data),
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<EventCategory> {
-    return this.eventCategoriesService.findOne(id);
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<EventCategoryResponseDto> {
+    const data = await this.eventCategoriesService.findOne(id);
+    return EventCategoryResponseDto.MapEntity(data);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Put(':id')
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateDto: UpdateEventCategoryDto,
-  ): Promise<EventCategory> {
-    return this.eventCategoriesService.update(id, updateDto);
+  ): Promise<EventCategoryResponseDto> {
+    const data = await this.eventCategoriesService.update(id, updateDto);
+    return EventCategoryResponseDto.MapEntity(data);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

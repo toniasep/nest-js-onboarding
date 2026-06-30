@@ -13,8 +13,10 @@ import { Event } from './event.entity.js';
 import { OrderStatus } from '../../../shared/enums/order-status.enum.js';
 export { OrderStatus };
 
+import { IOrder } from '../interfaces/order.interface.js';
+
 @Entity('orders')
-export class Order {
+export class Order implements IOrder {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 

@@ -22,8 +22,10 @@ export enum Role {
  *
  * Referensi: rules.md §3 — Repository Pattern & Data Mapper
  */
+import { IUser } from '../interfaces/user.interface.js';
+
 @Entity('users')
-export class User {
+export class User implements IUser {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 

@@ -28,8 +28,10 @@ export enum TicketStatus {
  *
  * Referensi: rules.md §3 — Repository Pattern & Data Mapper
  */
+import { ITicket } from '../interfaces/ticket.interface.js';
+
 @Entity('tickets')
-export class Ticket {
+export class Ticket implements ITicket {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 

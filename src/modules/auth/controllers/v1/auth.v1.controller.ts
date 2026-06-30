@@ -1,10 +1,8 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import {
-  AuthService,
-  AuthResponse,
-} from '../../services/v1/auth.v1.service.js';
+import { AuthService } from '../../services/v1/auth.v1.service.js';
 import { RegisterDto } from '../../dtos/requests/v1/register.dto.js';
 import { LoginDto } from '../../dtos/requests/v1/login.dto.js';
+import { AuthResponseDto } from '../../dtos/responses/v1/auth-response.dto.js';
 
 /**
  * Auth Controller
@@ -24,8 +22,9 @@ export class AuthController {
    * Return: 201 Created + user data + JWT token
    */
   @Post('register')
-  async register(@Body() registerDto: RegisterDto): Promise<AuthResponse> {
-    return this.authService.register(registerDto);
+  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
+    const data = await this.authService.register(registerDto);
+    return AuthResponseDto.MapEntity(data);
   }
 
   /**
@@ -35,7 +34,8 @@ export class AuthController {
    */
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
-    return this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
+    const data = await this.authService.login(loginDto);
+    return AuthResponseDto.MapEntity(data);
   }
 }

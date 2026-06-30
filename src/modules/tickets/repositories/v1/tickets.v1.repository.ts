@@ -5,51 +5,46 @@ import {
   Ticket,
   TicketStatus,
 } from '../../../../infrastructures/databases/entities/ticket.entity.js';
+import { ITicket } from '../../../../infrastructures/databases/interfaces/ticket.interface.js';
 import { SortOrder } from '../../../../shared/dtos/pagination.dto.js';
 
 @Injectable()
-export class TicketRepository {
+export class TicketRepository extends Repository<ITicket> {
   constructor(
     @InjectRepository(Ticket)
-    private readonly repo: Repository<Ticket>,
-  ) {}
-
-  create(data: Partial<Ticket>): Ticket {
-    return this.repo.create(data);
-  }
-
-  async save(ticket: Ticket): Promise<Ticket> {
-    return this.repo.save(ticket);
+    private readonly repo: Repository<ITicket>,
+  ) {
+    super(repo.target, repo.manager, repo.queryRunner);
   }
 
   async countByOrderId(orderId: string): Promise<number> {
-    return this.repo.count({ where: { orderId } });
+    return this.count({ where: { orderId } });
   }
 
-  async findAllByUser(userId: string): Promise<Ticket[]> {
-    return this.repo.find({
+  async findAllByUser(userId: string): Promise<ITicket[]> {
+    return this.find({
       where: { userId },
       relations: { event: true, order: true },
       order: { createdAt: SortOrder.DESC },
     });
   }
 
-  async findById(id: string): Promise<Ticket | null> {
-    return this.repo.findOne({
+  async findById(id: string): Promise<ITicket | null> {
+    return this.findOne({
       where: { id },
       relations: { event: true, order: true, user: true },
     });
   }
 
-  async findByTicketCode(ticketCode: string): Promise<Ticket | null> {
-    return this.repo.findOne({
+  async findByTicketCode(ticketCode: string): Promise<ITicket | null> {
+    return this.findOne({
       where: { ticketCode },
       relations: { event: true, user: true },
     });
   }
 
-  async markAsUsed(ticket: Ticket): Promise<Ticket> {
+  async markAsUsed(ticket: ITicket): Promise<ITicket> {
     ticket.status = TicketStatus.USED;
-    return this.repo.save(ticket);
+    return this.save(ticket);
   }
 }

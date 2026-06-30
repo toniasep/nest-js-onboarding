@@ -12,6 +12,7 @@ import { Queue } from 'bullmq';
 import { XenditService } from '../../../../infrastructures/integrations/xendit/xendit.service.js';
 
 import { Order } from '../../../../infrastructures/databases/entities/order.entity.js';
+import { IOrder } from '../../../../infrastructures/databases/interfaces/order.interface.js';
 import { OrderStatus } from '../../../../shared/enums/order-status.enum.js';
 import { XenditStatus } from '../../../../shared/enums/xendit-status.enum.js';
 import { QueueName } from '../../../../shared/enums/queue-name.enum.js';
@@ -47,7 +48,7 @@ export class OrdersService {
     userId: string,
     createDto: CreateOrderDto,
     email: string,
-  ): Promise<Order> {
+  ): Promise<IOrder> {
     const savedOrder = await this.dataSource.transaction(async (manager) => {
       const event = await this.orderEventRepository.findByIdWithLock(
         createDto.eventId,
@@ -61,21 +62,18 @@ export class OrdersService {
         throw new BadRequestException('Not enough quota');
 
       event.quota -= createDto.quantity;
-      await this.orderEventRepository.save(event, manager);
+      await manager.save(event);
 
       const totalAmount = Number(event.price) * createDto.quantity;
-      const order = this.orderRepository.createEntity(
-        {
-          userId,
-          eventId: event.id,
-          quantity: createDto.quantity,
-          totalAmount,
-          status: OrderStatus.PENDING,
-        },
-        manager,
-      );
+      const order = manager.getRepository(Order).create({
+        userId,
+        eventId: event.id,
+        quantity: createDto.quantity,
+        totalAmount,
+        status: OrderStatus.PENDING,
+      });
 
-      return this.orderRepository.save(order, manager);
+      return manager.save(order);
     });
 
     const event = await this.orderEventRepository.findById(savedOrder.eventId);
@@ -128,7 +126,7 @@ export class OrdersService {
         );
         if (event) {
           event.quota += order.quantity;
-          await this.orderEventRepository.save(event, manager);
+          await manager.save(event);
         }
       });
     }
@@ -137,11 +135,11 @@ export class OrdersService {
   async findAllByUser(
     userId: string,
     paginationDto: PaginationDto,
-  ): Promise<PaginatedResult<Order>> {
+  ): Promise<PaginatedResult<IOrder>> {
     return this.orderRepository.findAllByUser(userId, paginationDto);
   }
 
-  async findOne(id: string): Promise<Order> {
+  async findOne(id: string): Promise<IOrder> {
     const order = await this.orderRepository.findById(id);
     if (!order) throw new NotFoundException('Order not found');
     return order;
@@ -149,7 +147,7 @@ export class OrdersService {
 
   async findAllAdmin(
     paginationDto: PaginationDto,
-  ): Promise<PaginatedResult<Order>> {
+  ): Promise<PaginatedResult<IOrder>> {
     return this.orderRepository.findAllAdmin(paginationDto);
   }
 
@@ -186,7 +184,7 @@ export class OrdersService {
       const user = await manager.findOne(User, { where: { id: order.userId } });
 
       order.status = OrderStatus.EXPIRED;
-      await this.orderRepository.save(order, manager);
+      await manager.save(order);
 
       const event = await this.orderEventRepository.findByIdWithLock(
         order.eventId,
@@ -194,7 +192,7 @@ export class OrdersService {
       );
       if (event) {
         event.quota += order.quantity;
-        await this.orderEventRepository.save(event, manager);
+        await manager.save(event);
       }
 
       if (user) {

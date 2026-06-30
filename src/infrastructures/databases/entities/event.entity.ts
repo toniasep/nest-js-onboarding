@@ -16,8 +16,10 @@ import { EventCategory } from './event-category.entity.js';
  *
  * Referensi: rules.md §3 — Repository Pattern & Data Mapper
  */
+import { IEvent } from '../interfaces/event.interface.js';
+
 @Entity('events')
-export class Event {
+export class Event implements IEvent {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 

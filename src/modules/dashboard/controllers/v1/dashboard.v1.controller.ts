@@ -9,6 +9,9 @@ import {
   TopRankedDto,
   ExportQueryDto,
 } from '../../dtos/requests/v1/dashboard-query.dto.js';
+import { SalesSummaryResponseDto } from '../../dtos/responses/v1/sales-summary-response.dto.js';
+import { RankedItemResponseDto } from '../../dtos/responses/v1/ranked-item-response.dto.js';
+import { ExportResultResponseDto } from '../../dtos/responses/v1/export-result-response.dto.js';
 
 /**
  * DashboardController
@@ -35,8 +38,9 @@ export class DashboardController {
    * Return: total orders, total revenue, total tickets sold
    */
   @Get('sales')
-  getSales(@Query() dto: DateRangeDto) {
-    return this.dashboardService.getSalesSummary(dto);
+  async getSales(@Query() dto: DateRangeDto): Promise<SalesSummaryResponseDto> {
+    const data = await this.dashboardService.getSalesSummary(dto);
+    return SalesSummaryResponseDto.MapEntity(data);
   }
 
   /**
@@ -47,8 +51,11 @@ export class DashboardController {
    * Return: ranked list of events by total amount penjualan
    */
   @Get('top-events')
-  getTopEvents(@Query() dto: TopRankedDto) {
-    return this.dashboardService.getTopEvents(dto);
+  async getTopEvents(
+    @Query() dto: TopRankedDto,
+  ): Promise<RankedItemResponseDto[]> {
+    const data = await this.dashboardService.getTopEvents(dto);
+    return RankedItemResponseDto.MapEntities(data);
   }
 
   /**
@@ -59,8 +66,11 @@ export class DashboardController {
    * Return: ranked list of categories by total amount penjualan
    */
   @Get('top-categories')
-  getTopCategories(@Query() dto: TopRankedDto) {
-    return this.dashboardService.getTopCategories(dto);
+  async getTopCategories(
+    @Query() dto: TopRankedDto,
+  ): Promise<RankedItemResponseDto[]> {
+    const data = await this.dashboardService.getTopCategories(dto);
+    return RankedItemResponseDto.MapEntities(data);
   }
 
   /**
@@ -71,7 +81,10 @@ export class DashboardController {
    * Query: startDate, endDate
    */
   @Get('export')
-  exportReport(@Query() dto: ExportQueryDto) {
-    return this.dashboardService.exportReport(dto);
+  async exportReport(
+    @Query() dto: ExportQueryDto,
+  ): Promise<ExportResultResponseDto> {
+    const data = await this.dashboardService.exportReport(dto);
+    return ExportResultResponseDto.MapEntity(data);
   }
 }

@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../../../users/services/v1/users.v1.service.js';
 import { RegisterDto } from '../../dtos/requests/v1/register.dto.js';
 import { LoginDto } from '../../dtos/requests/v1/login.dto.js';
-import { User } from '../../../../infrastructures/databases/entities/user.entity.js';
+import { IUser } from '../../../../infrastructures/databases/interfaces/user.interface.js';
 
 /**
  * Interface untuk response autentikasi
@@ -89,7 +89,7 @@ export class AuthService {
     }
 
     // Guard clause: validasi password
-    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password!);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Email atau password salah');
     }
@@ -102,7 +102,7 @@ export class AuthService {
    * Build auth response object (user data + JWT token).
    * Extract method — menghindari duplikasi di register & login.
    */
-  private buildAuthResponse(user: User): AuthResponse {
+  private buildAuthResponse(user: IUser): AuthResponse {
     const payload = {
       sub: user.id,
       email: user.email,

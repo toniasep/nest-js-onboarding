@@ -28,17 +28,6 @@ import { UserResponseDto } from '../../dtos/responses/v1/user-response.dto.js';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  private mapToResponseDto(user: User): UserResponseDto {
-    return new UserResponseDto({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    });
-  }
-
   /**
    * GET /api/users/me
    * Mendapatkan profil user yang sedang login.
@@ -48,7 +37,7 @@ export class UsersController {
   @Get('me')
   async getProfile(@CurrentUser() user: User): Promise<UserResponseDto> {
     const fetchedUser = await this.usersService.findById(user.id);
-    return this.mapToResponseDto(fetchedUser);
+    return UserResponseDto.MapEntity(fetchedUser);
   }
 
   /**
@@ -67,6 +56,6 @@ export class UsersController {
       id,
       updateRoleDto.role,
     );
-    return this.mapToResponseDto(updatedUser);
+    return UserResponseDto.MapEntity(updatedUser);
   }
 }

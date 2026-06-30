@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Order } from '../../../../infrastructures/databases/entities/order.entity.js';
+import { IOrder } from '../../../../infrastructures/databases/interfaces/order.interface.js';
 import { PaginationDto } from '../../../../shared/dtos/pagination.dto.js';
 import {
   paginate,
@@ -9,24 +10,16 @@ import {
 } from '../../../../shared/utils/pagination.util.js';
 
 @Injectable()
-export class OrderRepository {
+export class OrderRepository extends Repository<IOrder> {
   constructor(
     @InjectRepository(Order)
-    private readonly repo: Repository<Order>,
-  ) {}
-
-  createEntity(data: Partial<Order>, manager?: EntityManager): Order {
-    const repo = manager ? manager.getRepository(Order) : this.repo;
-    return repo.create(data);
+    private readonly repo: Repository<IOrder>,
+  ) {
+    super(repo.target, repo.manager, repo.queryRunner);
   }
 
-  async save(order: Order, manager?: EntityManager): Promise<Order> {
-    const repo = manager ? manager.getRepository(Order) : this.repo;
-    return repo.save(order);
-  }
-
-  async findById(id: string): Promise<Order | null> {
-    return this.repo.findOne({
+  async findById(id: string): Promise<IOrder | null> {
+    return this.findOne({
       where: { id },
       relations: { event: true, user: true },
     });
@@ -35,7 +28,7 @@ export class OrderRepository {
   async findByIdWithLock(
     id: string,
     manager: EntityManager,
-  ): Promise<Order | null> {
+  ): Promise<IOrder | null> {
     return manager.getRepository(Order).findOne({
       where: { id },
       lock: { mode: 'pessimistic_write' },
@@ -45,9 +38,8 @@ export class OrderRepository {
   async findAllByUser(
     userId: string,
     paginationDto: PaginationDto,
-  ): Promise<PaginatedResult<Order>> {
-    const qb = this.repo
-      .createQueryBuilder('order')
+  ): Promise<PaginatedResult<IOrder>> {
+    const qb = this.createQueryBuilder('order')
       .leftJoinAndSelect('order.event', 'event')
       .where('order.userId = :userId', { userId });
 
@@ -62,9 +54,8 @@ export class OrderRepository {
 
   async findAllAdmin(
     paginationDto: PaginationDto,
-  ): Promise<PaginatedResult<Order>> {
-    const qb = this.repo
-      .createQueryBuilder('order')
+  ): Promise<PaginatedResult<IOrder>> {
+    const qb = this.createQueryBuilder('order')
       .leftJoinAndSelect('order.event', 'event')
       .leftJoinAndSelect('order.user', 'user');
 

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { Order } from '../../../../infrastructures/databases/entities/order.entity.js';
+import { IOrder } from '../../../../infrastructures/databases/interfaces/order.interface.js';
 import { OrderStatus } from '../../../../shared/enums/order-status.enum.js';
 import { SortOrder } from '../../../../shared/dtos/pagination.dto.js';
 
@@ -19,18 +20,19 @@ export interface RawRankedItem {
 }
 
 @Injectable()
-export class OrderAnalyticsRepository {
+export class OrderAnalyticsRepository extends Repository<IOrder> {
   constructor(
     @InjectRepository(Order)
-    private readonly repo: Repository<Order>,
-  ) {}
+    private readonly repo: Repository<IOrder>,
+  ) {
+    super(repo.target, repo.manager, repo.queryRunner);
+  }
 
   async getSalesSummary(
     startDate: Date,
     endDate: Date,
   ): Promise<RawSalesSummary> {
-    return (await this.repo
-      .createQueryBuilder('order')
+    return (await this.createQueryBuilder('order')
       .select('COUNT(order.id)', 'totalOrders')
       .addSelect('COALESCE(SUM(order.totalAmount), 0)', 'totalRevenue')
       .addSelect('COALESCE(SUM(order.quantity), 0)', 'totalTicketsSold')
@@ -47,8 +49,7 @@ export class OrderAnalyticsRepository {
     endDate: Date,
     limit: number,
   ): Promise<RawRankedItem[]> {
-    return this.repo
-      .createQueryBuilder('order')
+    return this.createQueryBuilder('order')
       .innerJoin('order.event', 'event')
       .select('event.id', 'id')
       .addSelect('event.title', 'name')
@@ -71,8 +72,7 @@ export class OrderAnalyticsRepository {
     endDate: Date,
     limit: number,
   ): Promise<RawRankedItem[]> {
-    return this.repo
-      .createQueryBuilder('order')
+    return this.createQueryBuilder('order')
       .innerJoin('order.event', 'event')
       .innerJoin('event.category', 'category')
       .select('category.id', 'id')
@@ -94,8 +94,8 @@ export class OrderAnalyticsRepository {
   async findPaidOrdersBetween(
     startDate: Date,
     endDate: Date,
-  ): Promise<Order[]> {
-    return this.repo.find({
+  ): Promise<IOrder[]> {
+    return this.find({
       where: {
         status: OrderStatus.PAID,
         createdAt: Between(startDate, endDate),

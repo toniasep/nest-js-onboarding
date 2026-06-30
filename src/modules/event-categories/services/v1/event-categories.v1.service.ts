@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EventCategory } from '../../../../infrastructures/databases/entities/event-category.entity.js';
+import { IEventCategory } from '../../../../infrastructures/databases/interfaces/event-category.interface.js';
 import { CreateEventCategoryDto } from '../../dtos/requests/v1/create-event-category.dto.js';
 import { UpdateEventCategoryDto } from '../../dtos/requests/v1/update-event-category.dto.js';
 import { ListEventCategoryDto } from '../../dtos/requests/v1/list-event-category.dto.js';
@@ -12,17 +12,18 @@ export class EventCategoriesService {
     private readonly eventCategoryRepository: EventCategoryRepository,
   ) {}
 
-  async create(createDto: CreateEventCategoryDto): Promise<EventCategory> {
-    return this.eventCategoryRepository.create(createDto);
+  async create(createDto: CreateEventCategoryDto): Promise<IEventCategory> {
+    const category = this.eventCategoryRepository.create(createDto);
+    return this.eventCategoryRepository.save(category);
   }
 
   async findAll(
     listDto: ListEventCategoryDto,
-  ): Promise<PaginatedResponse<EventCategory>> {
+  ): Promise<PaginatedResponse<IEventCategory>> {
     return this.eventCategoryRepository.findAll(listDto);
   }
 
-  async findOne(id: string): Promise<EventCategory> {
+  async findOne(id: string): Promise<IEventCategory> {
     const category = await this.eventCategoryRepository.findById(id);
     if (!category) {
       throw new NotFoundException(`Event Category with ID ${id} not found`);
@@ -33,7 +34,7 @@ export class EventCategoriesService {
   async update(
     id: string,
     updateDto: UpdateEventCategoryDto,
-  ): Promise<EventCategory> {
+  ): Promise<IEventCategory> {
     const category = await this.findOne(id);
     Object.assign(category, updateDto);
     return this.eventCategoryRepository.save(category);
